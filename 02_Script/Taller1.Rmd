@@ -27,6 +27,9 @@ In this problem set, we will focus only on employed individuals older than eight
 
 When writing this section up, you must:
 (a) Describe the data briefly, including its purpose, and any other relevant information.
+
+
+
 (b) Describe the process of acquiring the data and if there are any restrictions to accessing/scraping these data.
 
 ```{r pressure, echo=FALSE}
