@@ -84,3 +84,24 @@ include a descriptive statistics table with its interpretation. However, I expec
 a deep analysis that helps the reader understand the data, its variation, and the 
 justication for your data choices. Use your professional knowledge to add value to 
 this section. Do not present it as a dry list of ingredients."
+
+#3. Age-wage profile----
+"A great deal of evidence in labor economics suggests that the typical worker's 
+age-wage profile has a predictable path: Wages tend to be low when the worker is 
+young; they rise as the worker ages, peaking at about age 50; and the wage rate 
+tends to remain stable or decline slightly after age 50.
+
+In this subsection we are going to estimate the Age-wage profile profile for the 
+individuals in this sample:
+  
+When presenting and discussing your results, include:
+• A regression table.
+• An interpretation of the coefficients and it's significance.
+• A discussion of the model's in sample fit.
+• A plot of the estimated age-earnings profile implied by the above equation. 
+Including a discussion of the peak age with it's respective confidence intervals. 
+(Note: Use bootstrap to construct the confidence intervals.)"
+
+
+
+
