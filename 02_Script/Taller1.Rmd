@@ -86,7 +86,6 @@ df_filtrado %>% select(where(is.character)) %>% str()
 
 ```
 
-
 (c) Describe the data cleaning process and
 (d) Descriptive the variables included in your analysis. At a minimum, you should include a descriptive statistics table with its interpretation. However, I expect a deep analysis that helps the reader understand the data, its variation, and the justication for your data choices. Use your professional knowledge to add value to this section. Do not present it as a "dry" list of ingredients.
 
