@@ -62,5 +62,6 @@ colSums(is.na(datos_imputados_media)) %>%
 
 df_filtrado %>% select(where(is.character)) %>% str()
 
-
 ```
+
+#ikjij 
