@@ -1,28 +1,29 @@
 #1.1 General Instructions----
 
-#1. Introduction.----
+#1. Introduction----
 "The introduction briefly states the problem and if there are any antecedents. 
-It briefly describes the data and its suitability to address the problem set question. 
-It contains a preview of the results and main takeaways."
+It briefly describes the data and its suitability to address the problem set 
+question. It contains a preview of the results and main takeaways."
 
 #2. Data----
 "We will use data for Bogota from the 2018 Medicion de Pobreza Monetaria
 y Desigualdad Report that takes information from the GEIH.
 
-The data set contains all individuals sampled in Bogota and is available at the following 
-website https://ignaciomsarmiento.github.io/GEIH2018 sample/. To obtain the data, you must scrape 
-the website.
+The data set contains all individuals sampled in Bogota and is available at the 
+following website https://ignaciomsarmiento.github.io/GEIH2018 sample/. To obtain 
+the data, you must scrape the website.
 
-In this problem set, we will focus only on employed individuals older than eighteen (18) years old. 
-Restrict the data to these individuals and perform a descriptive analysis of the variables used in the problem set. 
-Keep in mind that in the data, there are many observations with missing data or 0 wages. I leave it to you to find 
+In this problem set, we will focus only on employed individuals older than eighteen 
+(18) years old. Restrict the data to these individuals and perform a descriptive 
+analysis of the variables used in the problem set. Keep in mind that in the data, 
+there are many observations with missing data or 0 wages. I leave it to you to find 
 a way to handle this data.
 
 When writing this section up, you must:
-(a) Describe the data briefly, including its purpose, and any other relevant information.
-(b) Describe the process of acquiring the data and if there are any restrictions to accessing/scraping these data."
-
-
+(a) Describe the data briefly, including its purpose, and any other relevant 
+information.
+(b) Describe the process of acquiring the data and if there are any restrictions 
+to accessing/scraping these data."
 
 library(rvest)
 library(dplyr)
@@ -77,3 +78,9 @@ colSums(is.na(datos_imputados_media)) %>%
 
 df_filtrado %>% select(where(is.character)) %>% str()
 
+"(c) Describe the data cleaning process and
+(d) Descriptive the variables included in your analysis. At a minimum, you should 
+include a descriptive statistics table with its interpretation. However, I expect 
+a deep analysis that helps the reader understand the data, its variation, and the 
+justication for your data choices. Use your professional knowledge to add value to 
+this section. Do not present it as a dry list of ingredients."
