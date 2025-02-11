@@ -69,3 +69,69 @@ df_filtrado %>% select(where(is.character)) %>% str()
 The introduction briefly states the problem and if there are any antecedents. It briefly describes the data and its suitability to address the problem set
 question. It contains a preview of the results and main takeaways.
 
+
+##2. Data
+We will use data for Bogota from the 2018 "Medicion de Pobreza Monetaria
+y Desigualdad Report" that takes information from the GEIH.
+
+The data set contains all individuals sampled in Bogota and is available at the following website https://ignaciomsarmiento.github.io/GEIH2018 sample/. To obtain the data, you must scrape the website.
+
+In this problem set, we will focus only on employed individuals older than eighteen (18) years old. Restrict the data to these individuals and perform a descriptive analysis of the variables used in the problem set. Keep in mind that in the data, there are many observations with missing data or 0 wages. I leave it to you to find a way to handle this data.
+
+When writing this section up, you must:
+(a) Describe the data briefly, including its purpose, and any other relevant information.
+(b) Describe the process of acquiring the data and if there are any restrictions to accessing/scraping these data.
+(c) Describe the data cleaning process and
+(d) Descriptive the variables included in your analysis. At a minimum, you should include a descriptive statistics table with its interpretation. However, I expect a deep analysis that helps the reader understand the data, its variation, and the justication for your data choices. Use your professional knowledge to add value to this section. Do not present it as a "dry" list of ingredients.
+
+##3. Age-wage profile.
+A great deal of evidence in labor economics suggests that the typical worker's age-wage profile has a predictable path: Wages tend to be low when
+the worker is young; they rise as the worker ages, peaking at about age 50; and the wage rate tends to remain stable or decline slightly after age 50".
+
+In this subsection we are going to estimate the Age-wage profile profile for the individuals in this sample:
+
+When presenting and discussing your results, include:
+• A regression table.
+• An interpretation of the coefficients and it's significance.
+• A discussion of the model's in sample fit.
+• A plot of the estimated age-earnings profile implied by the above equation. Including a discussion of the peak age" with it's respective confidence intervals. (Note: Use bootstrap to construct the confidence intervals.)
+
+##4. The gender earnings GAP.
+Policymakers have long been concerned with the gender wage gap, and is going to be our focus in this subsection.
+
+(a) Begin by estimating and discussing the unconditional wage gap:
+
+where Female is an indicator that takes one if the individual in the sample is identified as female.
+
+(b) Equal Pay for Equal Work? A common slogan is equal pay for equal work". One way to interpret this is that for employees with similar worker and job characteristics, no gender wage gap should exist. Estimate a conditional earnings gap incorporating control variables such as similar worker and job characteristics.
+
+In this section, estimate the conditional wage gap:
+i. First, using FWL
+ii. Second, using FWL with bootstrap. Compare the estimates and the standard errors.
+
+(c) Next, plot the predicted age-wage profile and estimate the implied peak ages" with the respective confidence intervals by gender.
+
+When presenting and discussing your results, include:
+
+An estimating equation, explaining the included control variables (beware of bad controls").
+• A regression table, with the estimates side by side of the conditional and unconditional wage gaps, highlighting the coeficient of interest. Controls, should not be included in the table but dutifully noted.
+• An interpretation of the Female" coeficients, a comparison between the models, and the in-sample fit.
+• A discussion about the implied peak ages and their statistical similarity/difference.
+• A thoughtful discussion about the unconditional and conditional wage gap, seeking to answer if the changes in the coefficient are evidence of a selection problem, a "discrimination problem," a mix, or none of these issues.
+
+
+##5. Predicting earnings
+In the previous sections, you estimated some specifications with inference in mind. In this subsection, we will evaluate the predictive power of these
+specifications.
+
+(a) Split the sample into two: a training (70%) and a testing (30%) sample. (Don't forget to set a seed to achieve reproducibility. In R, for example you can use set.seed(10101), where 10101 is the seed.)
+
+(b) Report and compare the predictive performance in terms of the RMSE of all the previous specifications with at least five (5) additional specifications that explore non-linearities and complexity.
+
+(c) In your discussion of the results, comment:
+i. About the overall performance of the models.
+ii. About the specification with the lowest prediction error.
+iii. For the specification with the lowest prediction error, explore those observations that seem to "miss the mark."To do so, compute the prediction errors in the test sample, and examine its distribution. Are there any observations in the tails of the prediction error distribution? Are these outliers potential people that the DIAN should look into, or are they just the product of a flawed model?
+
+(d) LOOCV. For the two models with the lowest predictive error in the previ-
+ous section, calculate the predictive error using Leave-one-out-cross-validation (LOOCV). Compare the results of the test error with those obtained with the validation set approach and explore the potential links with the influence statistic. (Note: when attempting this subsection, the calculations can take a long time, depending on your coding skills, plan accordingly!)
