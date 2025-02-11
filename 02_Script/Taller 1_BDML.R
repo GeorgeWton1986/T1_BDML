@@ -50,6 +50,3 @@ colSums(is.na(datos_imputados_media)) %>%
   .[. > 0]
 
 df_filtrado %>% select(where(is.character)) %>% str()
-
-#Denominacion de las variables
-#6050: Cual es el parentesco; 6090: Afiliado a SSS; 6100:Regimen de Seguridad
