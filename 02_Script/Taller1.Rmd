@@ -61,5 +61,11 @@ colSums(is.na(datos_imputados_media)) %>%
 
 df_filtrado %>% select(where(is.character)) %>% str()
 
-
 ```
+
+#1.1 General Instructions
+
+##1. Introduction. 
+The introduction briefly states the problem and if there are any antecedents. It briefly describes the data and its suitability to address the problem set
+question. It contains a preview of the results and main takeaways.
+
