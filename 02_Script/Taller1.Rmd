@@ -78,7 +78,7 @@ df_GEIH %>%
 str(df_GEIH[, c("age", "ocu")])
 
 # Filtrar personas mayores de 18 años que están empleadas
-df_filtrado <- df_filtrado %>%
+df_filtrado <- df_GEIH %>%
   filter(age >= 18, ocu == 1) 
 
 head(df_filtrado)
