@@ -210,3 +210,20 @@ df_salario <- df_salario %>%
 # Validación de la correcta imputación de valroes faltantes en el data frame de salario
 sum(is.na(df_salario))
 ```
+3.	Age-wage profile. A great deal of evidence in labor economics suggests that the typical worker’s age-wage profile has a predictable path: “Wages tend to be low when the worker is young; they rise as the worker ages, peaking at about age 50; and the wage rate tends to remain stable or decline slightly after age 50”.
+In this subsection we are going to estimate the Age-wage profile for the individuals in this sample:
+
+log(w) = β1 + β2Age + β3Age2 + u	(2)
+
+When presenting and discussing your results, include:
+•	A regression table.
+•	An interpretation of the coefficients and it’s significance.
+•	A discussion of the model’s in sample fit.
+•	A plot of the estimated age-earnings profile implied by the above equation. Including a discussion of the “peak age” with it’s respective confidence intervals. (Note: Use bootstrap to construct the confidence intervals.)
+```{r}
+#Estimacion de regresion log (salario)
+
+
+
+```
+
