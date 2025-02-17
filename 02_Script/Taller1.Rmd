@@ -25,13 +25,13 @@ Para llevar a cabo el análisis, utilizamos "pacman" para facilitar la carga e i
 ```{r}
 #if(!require(pacman)) install.packages("pacman") ; require(pacman)
 
-p_load(rvest, # permite realizar web scraping en R
-       dplyr, # Permite manipulación y transformación de los datos
-       skimr,  # resumen estadístico
-       visdat, # visualización de missing values
-       corrplot, # correlation plots
+p_load(rvest,     # permite realizar web scraping en R
+       dplyr,     # Permite manipulación y transformación de los datos
+       skimr,     # resumen estadístico
+       visdat,    # visualización de missing values
+       corrplot,  # correlation plots
        stargazer, # Tables/outputs to tex
-       ggplot2 # graficación
+       ggplot2    # graficación
        )
 ```
 
@@ -59,7 +59,7 @@ for (i in 1:10) {
 }
 
 # Unir todas las tablas en un solo dataframe
-df_final <- bind_rows(todas_las_tablas)
+df_GEIH <- bind_rows(todas_las_tablas)
 ```
 
 #### 2. Proceso de inspección
@@ -67,15 +67,15 @@ df_final <- bind_rows(todas_las_tablas)
 LAU
 
 ```{r}
-# Resumen de la Base de datos df_final
-skim(df_final) %>% head()
+# Resumen de la Base de datos df_GEIH
+skim(df_GEIH) %>% head()
 
-df_final %>%
+df_GEIH %>%
   select(age, ocu) %>%  # Visualizar solo las columnas clave
   sample_n(10)  # Mostrar 10 filas aleatorias
 
 # Verificar estructura de las variables clave
-str(df_final[, c("age", "ocu")])
+str(df_GEIH[, c("age", "ocu")])
 
 # Filtrar personas mayores de 18 años que están empleadas
 df_filtrado <- df_filtrado %>%
@@ -124,7 +124,7 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
 -   Estadísticas descriptivas por variables: (describir si tiene missing values, media, complete_rate, desviación estándar, cuartiles)
 
-    -   y_total_ma_ha:
+    -   salario_hora:
 
     -   age:
 
@@ -132,7 +132,7 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
     -   sex:
 
-    -   maxEducLevel:
+    -   max_nivel_educ:
 
     -   tiempo_empresa:
 
@@ -146,7 +146,7 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
 #### 2. Valores faltantes
 
-Con el resumen de estadísticas del nuevo data frame creado, se identifica la cantidad de valores faltantes (n_missing) en las variabñes y_total_m_ha y en la variable p6100. A continuación, se procede a validar la información e imputar los valores necesarios para poder estimar los modelos.
+Con el resumen de estadísticas del nuevo data frame creado, se identifica la cantidad de valores faltantes (n_missing) en las variables salario_hora, segu_social y max_nivel_educ. A continuación, se procede a validar la información e imputar los valores faltantes de acuerdo a las caracterísitcas de las variables para poder estimar los modelos más adelante.
 
 ```{r}
 # datos faltantes con skim
@@ -161,7 +161,7 @@ head(base_faltantes)
 # ordenar de forma descendente
 base_faltantes <- base_faltantes %>% arrange(-n_missing)
 
-# mantener solo las variables con calores faltantes
+# mantener solo las variables con valores faltantes
 base_faltantes<- base_faltantes %>% filter(n_missing!= 0)
 base_faltantes
 
@@ -176,21 +176,23 @@ ggplot(base_faltantes, aes(x = reorder(skim_variable, -n_missing), y = p_missing
   theme_minimal() +
   theme(axis.text.x = element_text(hjust = 1))
 
-# Imputación de valores faltantes con la media
+# Imputación de valores faltantes con el Método 1: Media/Mediana
 
-## Imputación a variables categóricas: max_nievl_educ y segu_social
+## Imputación de variables categóricas: max_nievl_educ y segu_social
 
-### Calcular los calores mas comunes
+### Calcular los valores mas comunes
 educacion <- as.numeric(names(sort(table(df_salario$max_nivel_educ), decreasing = TRUE)[1]))
 
 seg_soc <- as.numeric(names(sort(table(df_salario$segu_social), decreasing = TRUE)[1]))
 
-### Imputación de los valores faltantes
+### Imputación de los valores faltantes para ambas variables
 df_salario <- df_salario  %>%
   mutate(max_nivel_educ = ifelse(is.na(max_nivel_educ) == TRUE, educacion , max_nivel_educ)) %>% 
   mutate(segu_social = ifelse(is.na(segu_social) == TRUE, seg_soc , segu_social))
 
-# Distribución de la variable numérica: salario por hora
+## Imputación de variable continua: salario por hora
+
+### Gráfica de la distribución del salario por hora
 ggplot(df_salario, aes(salario_hora)) +
   geom_histogram(color = "#000000", fill = "#0099F8") +
   geom_vline(xintercept = median(df_salario$salario_hora, na.rm = TRUE), linetype = "dashed", color = "red") +
@@ -199,11 +201,12 @@ ggplot(df_salario, aes(salario_hora)) +
   theme_classic() +
   theme(plot.title = element_text(size = 18))
 
-## Debido a que la distribución del ingreso total por hora tiene un cola a la derecha, se deicide utilizar la mediana para imputar los valores faltantes.
+#### Debido a que la distribución del ingreso total por hora tiene un cola a la derecha, se deicide utilizar la mediana para imputar los valores faltantes.
 
+### Imputación de valores faltantes para variable continua
 df_salario <- df_salario %>% 
   mutate(salario_hora = ifelse(is.na(salario_hora) == TRUE, median(df_salario$salario_hora, na.rm = TRUE) , salario_hora))
 
-# Validación de correcta imputación de valroes faltantes en el data frame de salario
+# Validación de la correcta imputación de valroes faltantes en el data frame de salario
 sum(is.na(df_salario))
 ```
