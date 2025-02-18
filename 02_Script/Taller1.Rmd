@@ -273,21 +273,51 @@ $$
 
 ```{r}
 #Estimacion de regresion log (salario)
+modelo_age_wage <- lm(log(salario_hora) ~ age + I(age^2), data = df_salario) 
 
-
+summary(modelo_age_wage)
 
 ```
 
 # Interpretación de los resultados de la regresión log (salario)
+Coeficientes: El intercepto indica un valor de 7.735 del logaritmo del salario cuando la edad es cero, algo que en terminos de interpretación no tiene un sentido práctico. El coeficiente de edad muestra como cambia el logaritmo del salario con cada año adicional de edad. En este caso por cada año adicional de edad el salario aumenta 4.6%. El coeficiente de edad^2 refleja el efecto cuadrático de la edad. En este caso el valor es negativo, lo que indicaría que el salario aumenta hasta cierto punto y luego comienza a disminuir. Este valor se va a determinar en el analisis de "edad pico" para evaluar en que punto se produce el cambio. 
+
+Significación: Según los resultados obtenidos en la regresión todos los coeficientes obtenidos son estadisticamente significativos al 0.01 (99%). 
+
+Bondad de ajuste: El R² es  0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajores indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo. 
 
 ```{r}
 # Gráfico del perfil estimado de ingresos y edad
 
+edades <- unique(df_salario$age)  
+
+# Calcular los log salarios predichos por edad
+log_salarios_predichos <- coef(modelo_age_wage)["(Intercept)"] +
+                          coef(modelo_age_wage)["age"] * edades +
+                          coef(modelo_age_wage)["I(age^2)"] * edades^2
+
+# Data frame con salario log y reales
+df_pred <- data.frame(
+  edad = edades,
+  log_salario = log_salarios_predichos,
+  salario = exp(log_salarios_predichos)  
+)
+
+# Graficar el perfil estimado de ingresos y edad
+ggplot(df_pred, aes(x = edad, y = salario)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(data = df_pred %>% filter(edad %% 10 == 0),  
+             aes(x = edad, y = salario), color = "red", size = 2) +  # Puntos cada 10 años
+  labs(title = "Perfil estimado de ingresos por hora según la edad",
+       x = "Edad",
+       y = "Salario promedio estimado") +
+  theme_minimal()
 
 
 ```
 
  # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
+ 
 
 ```{r}
 # Bootstrap para construir los intervalos de confianza
