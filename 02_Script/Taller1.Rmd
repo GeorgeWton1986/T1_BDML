@@ -10,8 +10,6 @@ output: html_document
 
 ## Introducción
 
-## Introducción
-
 La Dirección de Impuestos y Aduanas Nacionales (DIAN) constituye la principal fuente de ingreso del Gobierno Central, según lo señala el Comité Autónomo de la Regla Fiscal (2024). Este ingreso es esencial para sostener los recursos fiscales de la Nación. Sin embargo, la economía colombiana enfrenta un significativo desafío: un déficit fiscal alimentado, en parte, por ingresos tributarios que, acumulados hasta noviembre de 2024, se situaron 10,8 billones de pesos por debajo de las proyecciones establecidas en el Marco Fiscal de Mediano Plazo (MFMP). Este marco define los límites de gasto del gobierno y es crucial para la estabilidad financiera del país. 
 
 González (2018) subraya la relevancia de la gestión de la DIAN en términos de control tributario y la utilización de diversas metodologías para combatir la evasión fiscal. Díaz y González (2024) añaden que una fiscalización efectiva depende de la implementación de instrumentos gerenciales, operativos, de medición y evaluación, capaces de identificar focos de evasión y contrabando. 
@@ -355,6 +353,55 @@ stargazer(reg_female, type = "text")
 - El error estandar para este modelo es de0.787 y esto indica la dispersión entre las 16542 observaciones y la estimación.
 
 - Significancia parcial: La variable female es significativa al 0.01 (99%), el error estandar es de 0.012 y explica que si es mujer, en promedio el salario disminuye en 7.9%
+
+
+## 4.1 Salario igual para trabajos iguales?
+
+El eslogan "salario igual por trabajo igual" es una forma de interpretar que los empleados con características laborales similares, no debe existir ninguna brecha salarial de genero.  En esta sección, se utilizará el modelo Frisch-Waugh-Lovell (FWL) para estimar la brecha salarial condicional, incorporando variables de control que reflejan las características semejantes de los trabajadores y los puestos de trabajo. El procedimiento se divide en tres pasos, que se describen a continuación:
+
+Paso 1: Estimación de la regresión con todos los predictores completos, y cálculo de los residuos u.
+Paso 2: Se realiza una regresión auxiliar utilizando los residuos obtenidos en el paso anterior.
+Paso 3: El Teorema de Frisch-Waugh-Lovell establece que los residuos de la primera y segunda regresión son numéricamente equivalentes.
+
+```{r}
+# PASO 1
+# Estimación de regresion log (salario) con female y otros controles
+reg_female_controles <- lm(formula = log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
+                          data =df_salario)
+
+# PASO 2
+# Regresión auxiliar para obtener los residuos u
+reg_female_residuos <- lm(formula = female  ~ max_nivel_educ + tiempo_empresa + age, 
+                          data =df_salario)
+
+residuos_female <- residuals(reg_female_residuos)
+
+# PASO 3
+#Correr la primera regresión con los residuos de female 
+reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario)
+
+
+stargazer(reg_female_controles , reg_residuos_female, type = "text")
+```
+De los resultados de las regresiones se puede observar que el teorema FWL se cumple porque los coeficientes de los betas son iguales
+
+```{r}
+#Se comparan los coeficienties de female
+
+beta_female_controles <- coef(reg_female_controles)["female"]
+beta_femal_residuos <- coef(reg_residuos_female)["residuos_female"]
+
+beta_female_controles 
+beta_femal_residuos
+```
+Posteriomente, se estima el modelo FWL con Boostrap 
+```{r}
+# FWL
+
+```
+
+Análisis de comparación de las estimaciones y los errores estándar
+
 
 
 # Referencias 
