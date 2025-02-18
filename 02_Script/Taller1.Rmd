@@ -10,7 +10,7 @@ output: html_document
 
 ## Introducción
 
-LAU
+LAUprueba
 
 ## Data
 
