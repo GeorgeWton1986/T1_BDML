@@ -10,11 +10,36 @@ output: html_document
 
 ## Introducción
 
-LAUprueba
+## Introducción
+
+La Dirección de Impuestos y Aduanas Nacionales (DIAN) constituye la principal fuente de ingreso del Gobierno Central, según lo señala el Comité Autónomo de la Regla Fiscal (2024). Este ingreso es esencial para sostener los recursos fiscales de la Nación. Sin embargo, la economía colombiana enfrenta un significativo desafío: un déficit fiscal alimentado, en parte, por ingresos tributarios que, acumulados hasta noviembre de 2024, se situaron 10,8 billones de pesos por debajo de las proyecciones establecidas en el Marco Fiscal de Mediano Plazo (MFMP). Este marco define los límites de gasto del gobierno y es crucial para la estabilidad financiera del país. 
+
+González (2018) subraya la relevancia de la gestión de la DIAN en términos de control tributario y la utilización de diversas metodologías para combatir la evasión fiscal. Díaz y González (2024) añaden que una fiscalización efectiva depende de la implementación de instrumentos gerenciales, operativos, de medición y evaluación, capaces de identificar focos de evasión y contrabando. 
+
+Diversos estudios apuntan a que el problema de la evasión fiscal se debe a factores como el bajo nivel educativo de los contribuyentes, la falta de valores, la desconfianza en el gobierno y la baja eficiencia en la administración de los recursos públicos (Pinedo, del Aguila y Alvarado, 2022). Según estos autores, contribuyentes financieramente responsables suelen compartir características como una cultura tributaria sólida, un alto nivel educativo y un ingreso familiar estable. 
+
+Las medidas adoptadas por las instituciones para combatir la evasión fiscal son esenciales, especialmente en países en desarrollo donde esta práctica genera inequidad y desigualdad social. La evasión fiscal conduce a problemas como la baja recaudación de ingresos y el deterioro de las finanzas públicas, afectando la calidad de los servicios prestados por las entidades públicas. Un modelo de predicción de ingresos podría ser una herramienta útil para detectar casos de fraude y reducir esta brecha, además de identificar a personas y familias vulnerables que requieren asistencia. 
+
+Este fenómeno distorsiona el sistema tributario, reduce los ingresos destinados al financiamiento del gasto público y afecta la capacidad del gobierno para sostener programas esenciales en áreas clave como salud, educación e infraestructura. Además, la evasión fiscal genera inequidad, compromete la competitividad del país y puede impactar negativamente el desarrollo socioeconómico nacional. Al mismo tiempo la evasión fiscal trae consigo consecuencias negativas en la competitividad del país al desfavorecer a los empresarios que cumplen con sus obligaciones tributarias (Yikona, 2011).  
+
+Estudios como los de Espitia y Suárez (2017) y Rojas, Martínez, Álvarez y Farfán (2024) destacan cómo la evasión fiscal afecta la competitividad y contribuye al déficit fiscal, lo que puede llevar a una crisis financiera. La evasión fiscal es más frecuente en lugares con una alta informalidad laboral, donde los individuos son menos educados y con escasos recursos, lo que dificulta la recaudación efectiva de impuestos, reflejando una falta de confianza en el sistema y las instituciones. (Leopoldo Fergusson & Carlos Molina & Juan Felipe Riaño, 2017) 
+
+El presente trabajo se enfocará en la estimación de un modelo econométrico basado en datos de la Gran Encuesta Integrada de Hogares de 2018, realizada por el Departamento Administrativo Nacional de Estadística para Bogotá. Se analizarán las condiciones salariales de la población mayor de 18 años, utilizando diferentes métodos para predecir sus ingresos. La estructura del trabajo incluirá la descripción y limpieza de datos, el análisis de variables, la predicción de ingresos y las conclusiones y limitaciones del estudio. 
+
 
 ## Data
 
-" describir por qué decidismos utilizar las variables para estimar los modelos , AJUSTAR AL FINAL CON LOS MODELOS FINALES."
+2. Descripción de los Datos y Proceso de Limpieza 
+
+2.1 Proceso de adquisición de los datos 
+
+En la presente sección se realiza una descripción de los datos y el proceso de adquisición y limpieza obtenidos en la Gran Encuesta Integrada de Hogares (GEIH) para 2018, realizada por el Departamento Administrativo Nacional de Estadística para Bogotá del "Informe de Pobreza Monetaria y Desigualdad". Esta sección se enfoca en las personas empleadas mayores de dieciocho (18) años. 
+
+La GEIH proporciona información estadística del tamaño y estructura de la fuerza laboral, incluyendo datos sobre empleo, desempleo y población fuera de la fuerza de trabajo, los ingresos laborales y no laborales de los hogares, y la pobreza monetaria y extrema de la población residente en el país. Esta encuesta permite caracterizar a la población según sexo, edad, parentesco con el jefe del hogar, nivel educativo, afiliación al sistema de seguridad social en salud, grupos poblacionales y otras formas de trabajo, como producción de bienes y servicios para autoconsumo y trabajo en formación, entre otros. 
+
+La GEIH tiene una muestra anual aproximada de 315,000 hogares a nivel nacional, lo que le confiere una mayor cobertura y permite generar indicadores más confiables para los principales indicadores del mercado laboral. 
+
+La base de datos se encuentra almacenada en una página web, por lo que se realizó un scrap del sitio web https://ignaciomsarmiento.github.io/GEIH2018_sample/. En primer lugar, se exploró la URL para identificar la información almacenada, evidenciando que se encontraba dividida en 10 data chunks. Se inspeccionó cada una de ellas y se realizó una iteración para consolidar la información de cada tabla y crear un dataframe llamado df_GEIH con 32.177 observaciones con 178 variables. 
 
 ## Modelo de salario individual por hora
 
@@ -64,7 +89,17 @@ df_GEIH <- bind_rows(todas_las_tablas)
 
 #### 2. Proceso de inspección
 
-LAU
+2.2 Proceso de limpieza de los datos 
+
+En primer lugar, se filtraron las personas ocupadas mayores de 18 años utilizando las variables "ocu" y "age". El término de personas ocupadas hace referencia a aquellos individuos que están trabajando en alguna actividad económica, ya sea de manera formal o informal, y que se encuentran dentro de la edad laboral. Para este análisis, se consideró que la edad legal para trabajar en Colombia es de 18 años, a partir de la cual no se aplican las restricciones que rigen para los menores de edad. 
+
+Lo anterior fue el resultado de la exploración de los datos, en la que se identificaron variables similares, como "ocu" y "dsi". Ambas son variables dicotómicas: "dsi" toma el valor de 1 si la persona está desempleada y 0 en caso contrario, mientras que "ocu" toma el valor de 1 si la persona está ocupada y 0 si no lo está. Dado que nuestro análisis se enfoca en las personas que están trabajando, se eligió la variable "ocu", ya que permite estudiar específicamente a las personas ocupadas. De este filtro, se da como resultado una base de datos con 16.542 observaciones con 178 variables.  
+
+Se procedió a identificar los datos faltantes. Para algunas variables, se utilizó el promedio de los valores disponibles, lo que resultó en una nueva base de datos denominada “df_salario” con 16,542 observaciones y 10 variables. Posteriormente, se calcularon los porcentajes de valores faltantes por cada variable y se graficó la distribución de estos porcentajes. 
+
+En cuanto a la imputación de los valores faltantes, se abordó de acuerdo con el tipo de variable. Para las variables categóricas, como educación y seguridad social, se ordenaron de manera descendente y se calculó el valor más común en cada categoría, que fue utilizado para reemplazar los datos faltantes. 
+
+Para la imputación de la variable continua, salario por hora, se analizó su distribución mediante un gráfico, observándose que presenta una cola hacia la derecha. Debido a esta distribución, se optó por imputar los valores faltantes con la mediana, ya que representa mejor el valor central de los datos. Finalmente, se verificó que no quedaran valores faltantes en la base de datos. 
 
 ```{r}
 # Resumen de la Base de datos df_GEIH
@@ -92,7 +127,23 @@ head(df_filtrado)
 
 Se crea un nuevo data frame para con algunas de las variables que hacen parte de la GEIH, con el objetivo de explicar el salario por hora de una persona. A continuación se explican las variables elegidas y su pertinencia para la estimación del modelo.
 
-***Escribir las variables***
+- Y_total_m_ha (Ingreso total mensual): Esta variable es la independiente y capta el salario total mensual que recibe un trabajador, que es directamente el objeto de análisis en estudios de salarios. 
+
+- Age (Edad): La edad influye en los salarios, ya que está vinculada a la experiencia laboral y las habilidades adquiridas a lo largo del tiempo. En general, la relación entre edad y salario es positiva hasta cierto punto, ya que la experiencia suele traducirse en mayores ingresos. Sin embargo, en etapas más avanzadas, esta relación puede estabilizarse o incluso disminuir. Según X, los jóvenes enfrentan tasas de desempleo más altas en el mercado laboral, mientras que las personas de mayor edad suelen experimentar períodos de desempleo más cortos, pero con una duración más prolongada. Orlando, A. (2000). DNP. 
+
+- Sex (Género): Esta variable es una dummy que toma el valor de 1 si la persona es mujer y 0 si es hombre. Su relevancia radica en el análisis de las diferencias salariales entre géneros. En numerosos estudios económicos, se ha observado la existencia de una brecha salarial de género, donde, en promedio, las mujeres ganan menos que los hombres por realizar el mismo trabajo o tareas similares. La teoría de discriminación laboral de Joan Robinson (1933) sostiene que, aunque hombres y mujeres sean igualmente productivos, las mujeres recibirán un salario inferior debido a que la curva de oferta laboral femenina es menos elástica que la masculina. (Cuervo Alvarado, M., 2022). 
+
+- MaxEducLevel (Máximo nivel educativo): El nivel educativo es una variable clave que afecta el salario. Los individuos con mayor nivel educativo suelen tener acceso a trabajos mejor remunerados debido a que se asocia con mayor capital humano, habilidades y capacidades técnicas como lo define la teoría planteada por Becker (1964)  
+
+- P6426 (Tiempo en la empresa): Esta variable se refiere al número de años que una persona ha trabajado en la misma organización. Puede estar relacionada con el aumento salarial por antigüedad. Según Gary Becker y Robert E. Lucas Jr., el capital humano abarca las habilidades y cualidades que hacen a las personas más productivas, siendo así un motor clave para el desarrollo organizacional. Este capital se convierte en una ventaja fundamental para las empresas, permitiéndoles desempeñarse eficazmente en su entorno. (Cuervo Alvarado, M., 2022). 
+
+- P6870 (Tamaño de la empresa): El tamaño de la empresa es una variable clave en la determinación salarial. Según Cuervo Alvarado (2022), las pequeñas empresas, que emplean de 1 a 10 personas, son determinantes en el tamaño y la producción de la industria. Sin embargo, en general, las empresas más grandes tienen una mayor capacidad económica, lo que les permite ofrecer salarios más altos y proporcionar mejores compensaciones a sus empleados. 
+
+- Depto (Departamento): El departamento o área de trabajo de un empleado puede influir en el salario. Diferentes departamentos tienen diferentes niveles de remuneración, dependiendo de la especialización, la demanda de las habilidades y el tipo de trabajo realizado. 
+
+- Formal (Formalidad del empleo): Según Orlando (2000), en su informe del DNP, la formalidad del empleo se refiere a si el trabajador está registrado formalmente o si trabaja en la informalidad. Los trabajos formales suelen tener mejores salarios, beneficios y seguridad social, mientras que los trabajos informales presentan salarios más bajos y menor estabilidad. 
+
+- P6100 (Seguridad social): La Organización Internacional del Trabajo hace referencia al régimen al que un trabajador está afiliado dentro del sistema de salud. El acceso a la seguridad social, especialmente a través de los diferentes regímenes (contributivo, especial y subsidiado), está estrechamente vinculado con la estabilidad económica y las oportunidades de ingresos. 
 
 ```{r}
 # Nuevo data frame
@@ -210,16 +261,16 @@ df_salario <- df_salario %>%
 # Validación de la correcta imputación de valroes faltantes en el data frame de salario
 sum(is.na(df_salario))
 ```
-3.	Age-wage profile. A great deal of evidence in labor economics suggests that the typical worker’s age-wage profile has a predictable path: “Wages tend to be low when the worker is young; they rise as the worker ages, peaking at about age 50; and the wage rate tends to remain stable or decline slightly after age 50”.
-In this subsection we are going to estimate the Age-wage profile for the individuals in this sample:
 
+## 3. Perfil de edad-salario
+
+Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”.
+En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
+
+$$
 log(w) = β1 + β2Age + β3Age2 + u	(2)
+$$
 
-When presenting and discussing your results, include:
-•	A regression table.
-•	An interpretation of the coefficients and it’s significance.
-•	A discussion of the model’s in sample fit.
-•	A plot of the estimated age-earnings profile implied by the above equation. Including a discussion of the “peak age” with it’s respective confidence intervals. (Note: Use bootstrap to construct the confidence intervals.)
 ```{r}
 #Estimacion de regresion log (salario)
 
@@ -227,3 +278,69 @@ When presenting and discussing your results, include:
 
 ```
 
+# Interpretación de los resultados de la regresión log (salario)
+
+```{r}
+# Gráfico del perfil estimado de ingresos y edad
+
+
+
+```
+
+ # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
+
+```{r}
+# Bootstrap para construir los intervalos de confianza
+
+
+
+```
+
+## 4.La brecha salarial de género. 
+
+Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
+
+$$
+log(w) = β1 + β2Female + u
+$$
+donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
+
+```{r}
+#Se crea la variable female en nuestra base
+
+df_salario <- df_salario %>%
+              mutate(female = ifelse(sex == 0, 1, 0))
+
+#Estimación de regresion log (salario) con female
+reg_female <- lm(formula = log(salario_hora) ~ female, data =df_salario)
+
+stargazer(reg_female, type = "text")
+
+```
+*Interpretación
+- Significancia global: El modelo es significativo al 0,01 (99%), es decir, la variable del modelo explica el salario por hora.
+
+- Bondad de ajuste: El R² es  0.002 y R² ajustado da el valor de 0.002 , esto indica que el modelo explica el salario en un 0.2%
+
+- El error estandar para este modelo es de0.787 y esto indica la dispersión entre las 16542 observaciones y la estimación.
+
+- Significancia parcial: La variable female es significativa al 0.01 (99%), el error estandar es de 0.012 y explica que si es mujer, en promedio el salario disminuye en 7.9%
+
+
+# Referencias 
+
+1. Pinedo, W. C., del Aguila, W. C., & Alvarado, G. D. P. P. (2022). Un análisis de la evasión tributaria.Ciencia Latina Revista Científica Multidisciplinar,6(2), 3224-3241. 
+
+2. Pedro A. Cabra-Acela, 2021. “Premiar a los buenos contribuyentes, ¿un mecanismo efectivo? ” Documentos CEDE19419, Universidad de los Andes, Facultad de Economía, CEDE. 
+
+3. Leopoldo Fergusson & Carlos Molina & Juan Felipe Riaño, 2017. "Evado impuestos, ¿y qué? Una nueva base de datos y evidencia de Colombia",Documentos CEDE15444, Universidad de los Andes, Facultad de Economía, CEDE.  
+
+4. Díaz, D. & González, J. (2024).Controles tributarios y la evasión fiscal en Colombia. [Proyecto aplicado]. Repositorio Institucional UNAD. https://repository.unad.edu.co/handle/10596/64465 
+
+5. Bloom Monterroza, C. C. y Villalba Ayazo, D. S. (2024). Causas y consecuencias de la evasión tributaria [Tesis de pregrado, Universidad Cooperativa de Colombia]. Repositorio Institucional Universidad Cooperativa de Colombia https://hdl.handle.net/20.500.12494/57925 
+
+6. El déficit fiscal de 2024 superaría la meta del Marco Fiscal de Mediano Plazo y el ajuste requerido para 2025 es mayor que el contemplado en el decreto de aplazamiento, (CARF, 2024) 
+
+7. Rocha Combita, J. (2024) Elusion y evasion fiscal en Colombia. https://bibliotecadigital.iue.edu.co/jspui/handle/20.500.12717/3192 
+
+8. Cuervo Alvarado, M. (2022). Análisis de los determinantes de las asignaciones salariales entre hombres y mujeres en la industria manufacturera en Bogotá 2016-201 
