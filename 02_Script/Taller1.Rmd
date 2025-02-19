@@ -320,7 +320,9 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 ```{r}
 # Bootstrap para construir los intervalos de confianza
 
-# Realizar el remuestreo (bootstrap) de tamaño 1000 con reemplazos
+#https://rpubs.com/andrew32118/Bootstrap
+
+# Realizar el remuestreo (bootstrap) de tamaño 1000 con reemplazos sobre la variable age
 boot <- sample(df_salario$age,1000, replace = TRUE)
 
 #Crear una matriz de 1000 filas y 1 columna a partir del remuestreo
