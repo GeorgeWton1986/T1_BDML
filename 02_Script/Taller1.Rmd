@@ -324,6 +324,10 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 
 ```
 
+El metodo de Bootstrap permite entender la variabilidad de los datos estadisticos que puede ser usado 
+para cuantificar la incertidumbre de los coeficientes calculados. Esta herramienta es usada para estimar
+los errores estandar de los estimadores desde una regresion ajustada.
+
 ## 4.La brecha salarial de género. 
 
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
