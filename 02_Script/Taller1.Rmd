@@ -320,16 +320,38 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 ```{r}
 # Bootstrap para construir los intervalos de confianza
 
-# Realizar el remuestreo (bootstrap) de tamaño 500 con reemplazo
-boot <- sample(df_salario$age,500, replace = TRUE)
+# Realizar el remuestreo (bootstrap) de tamaño 1000 con reemplazos
+boot <- sample(df_salario$age,1000, replace = TRUE)
 
-#Crear una matriz de 500 filas y 1 columna a partir del remuestreo
-m_boots <- matrix(boot, nrow = 500, ncol = 1, byrow = TRUE)
+#Crear una matriz de 1000 filas y 1 columna a partir del remuestreo
+m_boots <- matrix(boot, nrow = 1000, ncol = 1, byrow = TRUE)
+
+#Calcular los cuantiles de confianza de la matriz
+quantiles <- quantile(m_boots, probs = c(0.025,0.975))
+
+#Ver los resultados de los cuantiles en la variable age.
+quantiles
 
 #Calcular los intervalos de confianza de la matriz
-intervalos <- quantile(m_boots, probs = c(0.025,0.975))
+intervalos <- c(2*mean(m_boots)-quantiles[2], 2*mean(m_boots)-quantiles[1])
 
+#Ver los resultados de los intervalos en la variable age.
 intervalos
+
+#Graficar el histograma
+
+hist(m_boots, las=1,
+     main = "Distribución de muestra",
+     xlim = c(0,100),
+     xlab = "Edades",
+     ylim = c(0,200),
+     ylab = "Frecuencia",
+     col = "blue")
+
+abline(v=intervalos, col = "red", lwd = 2, lty = 2)
+abline(v=quantiles, col = "green", lwd =2, lty=2)
+legend("topright", legend = c("Intervalos", "Cuantiles"), col = c("red","green"), lwd = 2, lty = 2)
+
 ```
 
 El metodo de Bootstrap permite entender la variabilidad de los datos estadisticos que puede ser usado 
