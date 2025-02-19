@@ -320,8 +320,16 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 ```{r}
 # Bootstrap para construir los intervalos de confianza
 
+# Realizar el remuestreo (bootstrap) de tamaño 500 con reemplazo
+boot <- sample(df_salario$age,500, replace = TRUE)
 
+#Crear una matriz de 500 filas y 1 columna a partir del remuestreo
+m_boots <- matrix(boot, nrow = 500, ncol = 1, byrow = TRUE)
 
+#Calcular los intervalos de confianza de la matriz
+intervalos <- quantile(m_boots, probs = c(0.025,0.975))
+
+intervalos
 ```
 
 El metodo de Bootstrap permite entender la variabilidad de los datos estadisticos que puede ser usado 
