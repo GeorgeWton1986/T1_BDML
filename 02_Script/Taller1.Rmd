@@ -466,7 +466,6 @@ El valor del error estándar de la estimación de female mediante el método FWL
 
 A pesar de estos pequeños cambios en los errores estándar, la brecha salarial de género sigue siendo evidente. El coeficiente negativo para female en ambos modelos indica que las mujeres ganan, en promedio, menos que los hombres, lo que confirma la persistencia de la brecha salarial.
 
-
 Ahora, se graficará el perfil de edad- salario previsto y se calculará las edades pico implícitas con los respectivos intervalos de confianza por género
 ```{r}
 ggplot(df_salario) + 
@@ -483,7 +482,14 @@ ggplot(df_salario) +
 
 ```
 
+Discusión de edades pico a partir del gráfico 
+(...)
 
+Para concluir este análisis, retomamos lo que señala Sabogal (2012), quien destaca que en Colombia, las mujeres perciben salarios más bajos que los hombres, a pesar del aumento en su participación laboral, el mayor número de horas trabajadas y ciertas características observables, como el nivel educativo, durante las últimas tres décadas.
+
+A partir de los resultados obtenidos en los modelos condicional e incondicional de la brecha salarial, se puede inferir que las variables contribuyen a un problema mixto que involucra tanto la selección como la discriminación salarial hacia las mujeres.
+
+La selección no solo puede depender de características observables tales como la edad, la educación y la experiencia, sino también verse influida por factores históricos o estructurales de discriminación. Por ejemplo, si las mujeres son seleccionadas para desempeñar roles en ocupaciones de menor remuneración debido a estereotipos de género preestablecidos, esto puede ampliar la brecha salarial. En caso de que la brecha condicional persista, aún después de ajustar por variables observables, podríamos estar ante una combinación de discriminación estructural y diferencias ocupacionales no completamente reflejadas en el modelo.
 
 
 # Referencias 
@@ -503,3 +509,5 @@ ggplot(df_salario) +
 7. Rocha Combita, J. (2024) Elusion y evasion fiscal en Colombia. https://bibliotecadigital.iue.edu.co/jspui/handle/20.500.12717/3192 
 
 8. Cuervo Alvarado, M. (2022). Análisis de los determinantes de las asignaciones salariales entre hombres y mujeres en la industria manufacturera en Bogotá 2016-201 
+
+9. Sabogal, A. (2012). Brecha salarial entre hombres y mujeres y ciclo económico en Colombia.
