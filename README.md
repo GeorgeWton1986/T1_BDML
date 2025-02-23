@@ -1,8 +1,8 @@
 # Problem Set 1: Predicting Income 
 ## Integrantes:
-Nicolas Jácome 
-Zaira García
-Jorge Viáfara
+Nicolas Jácome;
+Zaira García;
+Jorge Viáfara;
 Laura Rivera
 
 ## Introducción:
