@@ -54,7 +54,8 @@ p_load(rvest,     # permite realizar web scraping en R
        visdat,    # visualización de missing values
        corrplot,  # correlation plots
        stargazer, # Tables/outputs to tex
-       ggplot2    # graficación
+       ggplot2,    # graficación
+       boot
        )
 ```
 
@@ -452,7 +453,7 @@ stargazer(reg_female_controles , reg_residuos_female, type = "text")
 De los resultados de las regresiones se puede observar que el teorema FWL se cumple porque los coeficientes de los betas son iguales
 
 ```{r}
-#Se comparan los coeficienties de female
+#Se comparan los coeficientes de female
 
 beta_female_controles <- coef(reg_female_controles)["female"]
 beta_femal_residuos <- coef(reg_residuos_female)["residuos_female"]
@@ -462,11 +463,51 @@ beta_femal_residuos
 ```
 Posteriomente, se estima el modelo FWL con Boostrap 
 ```{r}
-# FWL
+# Función para sacar residuales
+fwl_boot <- function(data ,index) {
+  
+          coef(lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
+                          data = df_salario, 
+                          subset = index))[2]
+               }
+
+# Validación
+fwl_boot(df_salario, 1:nrow(df_salario))
+  
+# Semilla para hacerlo reproducible
+set.seed(123)
+
+# Estimaciones y errores estandar
+errorestandar_boot <-  boot(df_salario, fwl_boot, R = 1000)
+errorestandar_boot
 
 ```
 
 Análisis de comparación de las estimaciones y los errores estándar
+
+Al comparar las estimaciones de los coeficientes para female en los dos modelos (uno con controles y otro con los residuos de female), se observa que las estimaciones son prácticamente iguales cuando se utiliza el bootstrap. Sin embargo, los errores estándar son ligeramente diferentes entre los métodos con FWL y FWL con Boostrap. En el modelo estimado mediante el método FWL, el error estándar para female es de 0.011, mientras que en el modelo ajustado por los residuos de female, el error estándar aumenta ligeramente a 0.012. Aunque ambos valores son bastante similares, el modelo con los residuos refleja un pequeño aumento en la variabilidad de la estimación.
+
+El valor del error estándar de la estimación de female mediante el método FWL con bootstrap es 0.01096617, lo que es consistente con los resultados obtenidos en el modelo con controles. Además, se observa que la variabilidad en la estimación de female es más baja en el modelo con bootstrap, en comparación con el modelo FWL ajustado por los residuos, lo que sugiere una mayor precisión en las estimaciones obtenidas mediante el bootstrap.
+
+A pesar de estos pequeños cambios en los errores estándar, la brecha salarial de género sigue siendo evidente. El coeficiente negativo para female en ambos modelos indica que las mujeres ganan, en promedio, menos que los hombres, lo que confirma la persistencia de la brecha salarial.
+
+
+Ahora, se graficará el perfil de edad- salario previsto y se calculará las edades pico implícitas con los respectivos intervalos de confianza por género
+```{r}
+ggplot(df_salario) + 
+  geom_point(
+    aes(x = age, y = log(salario_hora)),
+    color = "darkred", size = 2
+  ) + 
+  labs(
+    title = "Relación de edad y Salario por Horas",
+    x = "Edad",
+    y = "Ln Salario por horas"
+  ) +
+  theme_bw()
+
+```
+
 
 
 
