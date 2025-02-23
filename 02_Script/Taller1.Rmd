@@ -321,6 +321,46 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 ```{r}
 # Bootstrap para construir los intervalos de confianza
 
+set.seed(123)
+repeticiones <- 1000 #Cantidad de repeciones
+betas_repeticiones <- rep(NA, repeticiones) #Vector donde se almacenará las estimaciones
+
+for (i in 1:repeticiones){
+  boot1 <- sample(df_salario$age, 1000, replace=TRUE) #Remuestreo aleatorio edad
+  boot2 <- sample(df_salario$salario_hora, 1000, replace = TRUE) #Remuestreo aleatorio Salario
+  m_boot <- data.frame (boot2, boot1) #Crear un data frame con las dos muestreas
+  modelo_boot1 <- lm(log(boot2) ~ boot1 + I(boot1^2), m_boot) #Calculo de los nuevos coeficientes
+  betas_boot1 <- modelo_boot1$coefficients [1] #Seleccion de los nuevos betas con bootstrap
+  betas_repeticiones[i] <- betas_boot1 #Almanecamiento de los nuevos betas
+}
+
+#Calcular los cuantiles de confianza de la matriz
+quantiles_boot <- quantile(betas_repeticiones, probs = c(0.025,0.975))
+
+#Ver los resultados de los cuantiles en la variable age.
+quantiles_boot
+
+#Graficar el histograma
+
+hist(betas_repeticiones, las=1,
+     main = "Distribución de muestra",
+     xlim = c(7.5,9.5),
+     xlab = "Betas",
+     ylim = c(0,200),
+     ylab = "Frecuencia",
+     col = "blue")
+
+abline(v=quantiles_boot, col = "green", lwd =2, lty=2)
+legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
+
+#-----
+
+
+
+
+
+
+
 #https://rpubs.com/andrew32118/Bootstrap
 
 # Realizar el remuestreo (bootstrap) de tamaño 1000 con reemplazos sobre la variable age
