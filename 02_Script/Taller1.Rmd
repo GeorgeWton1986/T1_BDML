@@ -492,6 +492,62 @@ A partir de los resultados obtenidos en los modelos condicional e incondicional 
 La selección no solo puede depender de características observables tales como la edad, la educación y la experiencia, sino también verse influida por factores históricos o estructurales de discriminación. Por ejemplo, si las mujeres son seleccionadas para desempeñar roles en ocupaciones de menor remuneración debido a estereotipos de género preestablecidos, esto puede ampliar la brecha salarial. En caso de que la brecha condicional persista, aún después de ajustar por variables observables, podríamos estar ante una combinación de discriminación estructural y diferencias ocupacionales no completamente reflejadas en el modelo.
 
 
+#5. Predicción de salario
+#5.a. División de la muestra
+
+```{r}
+set.seed(10101) 
+
+# Vector para los indices de la división
+training_sample <- sample(1:nrow(df_salario), size = 0.7 * nrow(df_salario))
+
+# División en datos de training (70%) y test (30%)
+train_data <- df_salario[training_sample, ]
+test_data <- df_salario[-training_sample, ]
+
+# Verificación tamaños
+nrow(train_data)  
+nrow(test_data)   
+
+
+```
+#Modelos 
+
+```{r}
+# Modelo 1: Regresión con Female y controles
+reg_female_controles <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
+                           data = df_salario)
+
+# Modelo 2: Regresión auxiliar (FWL - residuos de Female)
+reg_female_residuos <- lm(female ~ max_nivel_educ + tiempo_empresa + age, 
+                          data = df_salario)
+
+residuos_female <- residuals(reg_female_residuos)
+
+# Modelo 3: Regresión con residuos de Female
+reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario)
+
+# Modelo 4: Modelo sin controles (solo female)
+mod_sin_controles <- lm(log(salario_hora) ~ female + tamaño_empresa, data = df_salario)
+
+# Modelo 5: Modelo con interacciones (female x age)
+mod_interaccion <- lm(log(salario_hora) ~ female + age + female:tiempo_empresa + tiempo_empresa, data = df_salario)
+
+# Modelo 6: Modelo no lineal con tamaño empresa²
+mod_nolineal <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), data = df_salario)
+
+# Modelo 7: Modelo con variables adicional
+mod_var_adicionales <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
+                          data = df_salario)
+
+# Modelo 8: 
+mod_var_adicionales <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + edad + I(edad^2), data = df_salario
+
+
+```
+
+
+
 # Referencias 
 
 1. Pinedo, W. C., del Aguila, W. C., & Alvarado, G. D. P. P. (2022). Un análisis de la evasión tributaria.Ciencia Latina Revista Científica Multidisciplinar,6(2), 3224-3241. 
