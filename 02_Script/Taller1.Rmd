@@ -317,85 +317,45 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 
  # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
  
-
 ```{r}
-# Bootstrap para construir los intervalos de confianza
+# Función hallar estimadores edades
+edad_boot <- function(data ,index) {
+  
+          coef(lm(log(salario_hora) ~ age + I(age^2), 
+                          data = df_salario, 
+                          subset = index))[2]
+               }
 
+# Validación
+edad_boot(df_salario, 1:nrow(df_salario))
+  
+# Semilla para hacerlo reproducible
 set.seed(123)
-repeticiones <- 1000 #Cantidad de repeciones
-betas_repeticiones <- rep(NA, repeticiones) #Vector donde se almacenará las estimaciones
 
-for (i in 1:repeticiones){
-  boot1 <- sample(df_salario$age, 1000, replace=TRUE) #Remuestreo aleatorio edad
-  boot2 <- sample(df_salario$salario_hora, 1000, replace = TRUE) #Remuestreo aleatorio Salario
-  m_boot <- data.frame (boot2, boot1) #Crear un data frame con las dos muestreas
-  modelo_boot1 <- lm(log(boot2) ~ boot1 + I(boot1^2), m_boot) #Calculo de los nuevos coeficientes
-  betas_boot1 <- modelo_boot1$coefficients [1] #Seleccion de los nuevos betas con bootstrap
-  betas_repeticiones[i] <- betas_boot1 #Almanecamiento de los nuevos betas
-}
+# Estimaciones y errores estandar
+est_boot <-  boot(df_salario, edad_boot, R = 1000)
+est_boot_coef <- est_boot$t
+est_boot_coef
 
 #Calcular los cuantiles de confianza de la matriz
-quantiles_boot <- quantile(betas_repeticiones, probs = c(0.025,0.975))
-
-#Ver los resultados de los cuantiles en la variable age.
-quantiles_boot
+quan_edad_boot <- quantile(est_boot_coef, probs = c(0.025,0.975))
+quan_edad_boot
 
 #Graficar el histograma
-
-hist(betas_repeticiones, las=1,
+hist(est_boot_coef, las=1,
      main = "Distribución de muestra",
-     xlim = c(7.5,9.5),
+     xlim = c(0.035,0.06),
      xlab = "Betas",
-     ylim = c(0,200),
+     ylim = c(0,400),
      ylab = "Frecuencia",
      col = "blue")
 
-abline(v=quantiles_boot, col = "green", lwd =2, lty=2)
+abline(v=quan_edad_boot, col = "green", lwd =2, lty=2)
 legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
 
-#-----
-
-
-
-
-
-
-
-#https://rpubs.com/andrew32118/Bootstrap
-
-# Realizar el remuestreo (bootstrap) de tamaño 1000 con reemplazos sobre la variable age
-boot <- sample(df_salario$age,1000, replace = TRUE)
-
-#Crear una matriz de 1000 filas y 1 columna a partir del remuestreo
-m_boots <- matrix(boot, nrow = 1000, ncol = 1, byrow = TRUE)
-
-#Calcular los cuantiles de confianza de la matriz
-quantiles <- quantile(m_boots, probs = c(0.025,0.975))
-
-#Ver los resultados de los cuantiles en la variable age.
-quantiles
-
-#Calcular los intervalos de confianza de la matriz
-intervalos <- c(2*mean(m_boots)-quantiles[2], 2*mean(m_boots)-quantiles[1])
-
-#Ver los resultados de los intervalos en la variable age.
-intervalos
-
-#Graficar el histograma
-
-hist(m_boots, las=1,
-     main = "Distribución de muestra",
-     xlim = c(0,100),
-     xlab = "Edades",
-     ylim = c(0,200),
-     ylab = "Frecuencia",
-     col = "blue")
-
-abline(v=intervalos, col = "red", lwd = 2, lty = 2)
-abline(v=quantiles, col = "green", lwd =2, lty=2)
-legend("topright", legend = c("Intervalos", "Cuantiles"), col = c("red","green"), lwd = 2, lty = 2)
 
 ```
+
 
 ## 4.La brecha salarial de género. 
 
