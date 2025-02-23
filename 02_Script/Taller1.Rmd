@@ -329,7 +329,7 @@ for (i in 1:repeticiones){
   boot1 <- sample(df_salario$age, 1000, replace=TRUE) #Remuestreo aleatorio edad
   boot2 <- sample(df_salario$salario_hora, 1000, replace = TRUE) #Remuestreo aleatorio Salario
   m_boot <- data.frame (boot2, boot1) #Crear un data frame con las dos muestreas
-  modelo_boot1 <- lm(log(boot2) ~ boot1 + I(boot1^2), m_boot) #Calculo de los nuevos coeficientes
+  modelo_boot1 <- lm(formula = log(boot2) ~ boot1 + I(boot1^2), data = m_boot) #Calculo de los nuevos coeficientes
   betas_boot1 <- modelo_boot1$coefficients [1] #Seleccion de los nuevos betas con bootstrap
   betas_repeticiones[i] <- betas_boot1 #Almanecamiento de los nuevos betas
 }
