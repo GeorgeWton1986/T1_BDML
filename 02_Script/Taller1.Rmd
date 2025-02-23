@@ -417,7 +417,15 @@ reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario
 stargazer(reg_female_controles , reg_residuos_female, type = "text",
           column.labels = c("Modelo Condicional", "Modelo Incondicional"))
 ```
-De los resultados de las regresiones se puede observar que el teorema FWL se cumple porque los coeficientes de los betas son iguales
+Análisis del modelo condicional e incondicional:
+
+El coeficiente de la variable "female" en ambos modelos sugiere que, en promedio, las mujeres ganan un 10.7% menos que los hombres en salario por hora, incluso después de controlar por variables como el nivel educativo, la antigüedad en la empresa y la edad. Ambas variables son estadísticamente significativas, y se observa que el error estándar del coeficiente en el modelo condicional es 0.011, mientras que en el modelo incondicional es ligeramente más alto, 0.012.
+
+El R² de ambos modelos es relativamente bajo, lo cual indica que estos modelos no tienen un buen ajuste con la muestra. Generalmente, se espera que el R² se acerque al 40%-80% para considerar los modelos más explicativo, pero en este caso ambos valores son menores (0.192) y (0.005), lo que sugiere que las variables elegidas no explican del todo las diferencias salariales.
+
+El estadístico F en ambos modelos es significativo, lo que indica que al menos una de las variables es relevante para predecir el salario por hora. Sin embargo, el modelo condicional tiene un ajuste superior, ya que controla por variables clave que influyen en los salarios, lo que lo convierte en un modelo más robusto y confiable en comparación con el modelo incondicional.
+
+De los resultados de las regresiones se puede observar que el teorema FWL se cumple porque los coeficientes de los betas son iguales.
 
 ```{r}
 #Se comparan los coeficientes de female
