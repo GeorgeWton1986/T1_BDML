@@ -458,7 +458,19 @@ El valor del error estándar de la estimación de female mediante el método FWL
 A pesar de estos pequeños cambios en los errores estándar, la brecha salarial de género sigue siendo evidente. El coeficiente negativo para female en ambos modelos indica que las mujeres ganan, en promedio, menos que los hombres, lo que confirma la persistencia de la brecha salarial.
 
 
+Ahora, se graficará el perfil de edad- salario previsto y se calculará las edades pico implícitas con los respectivos intervalos de confianza por género
 ```{r}
+ggplot(df_salario) + 
+  geom_point(
+    aes(x = age, y = log(salario_hora)),
+    color = "darkred", size = 2
+  ) + 
+  labs(
+    title = "Relación de edad y Salario por Horas",
+    x = "Edad",
+    y = "Ln Salario por horas"
+  ) +
+  theme_bw()
 
 ```
 
