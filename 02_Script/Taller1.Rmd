@@ -8,7 +8,7 @@ output: html_document
 
 # Problem set 1
 
-## Introducción ---- LAURA....
+## Introducción
 
 La Dirección de Impuestos y Aduanas Nacionales (DIAN) constituye la principal fuente de ingreso del Gobierno Central, según lo señala el Comité Autónomo de la Regla Fiscal (2024). Este ingreso es esencial para sostener los recursos fiscales de la Nación. Sin embargo, la economía colombiana enfrenta un significativo desafío: un déficit fiscal alimentado, en parte, por ingresos tributarios que, acumulados hasta noviembre de 2024, se situaron 10,8 billones de pesos por debajo de las proyecciones establecidas en el Marco Fiscal de Mediano Plazo (MFMP). Este marco define los límites de gasto del gobierno y es crucial para la estabilidad financiera del país. 
 
@@ -25,7 +25,7 @@ Estudios como los de Espitia y Suárez (2017) y Rojas, Martínez, Álvarez y Far
 El presente trabajo se enfocará en la estimación de un modelo econométrico basado en datos de la Gran Encuesta Integrada de Hogares de 2018, realizada por el Departamento Administrativo Nacional de Estadística para Bogotá. Se analizarán las condiciones salariales de la población mayor de 18 años, utilizando diferentes métodos para predecir sus ingresos. La estructura del trabajo incluirá la descripción y limpieza de datos, el análisis de variables, la predicción de ingresos y las conclusiones y limitaciones del estudio. 
 
 
-## Data ---- NICOLAS - ZAIRA
+## Data
 
 2. Descripción de los Datos y Proceso de Limpieza 
 
@@ -261,10 +261,9 @@ df_salario <- df_salario %>%
 sum(is.na(df_salario))
 ```
 
-## 3. Perfil de edad-salario ---- NICOLAS Y JORGE
+## 3. Perfil de edad-salario
 
 Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”.
-
 En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
 
 $$
@@ -322,42 +321,6 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 ```{r}
 # Bootstrap para construir los intervalos de confianza
 
-set.seed(123)
-repeticiones <- 1000 #Cantidad de repeciones
-betas_repeticiones <- rep(NA, repeticiones) #Vector donde se almacenará las estimaciones
-
-for (i in 1:repeticiones){
-  boot1 <- sample(df_salario$age, 1000, replace=TRUE) #Remuestreo aleatorio edad
-  boot2 <- sample(df_salario$salario_hora, 1000, replace = TRUE) #Remuestreo aleatorio Salario
-  m_boot <- data.frame (boot2, boot1) #Crear un data frame con las dos muestreas
-  modelo_boot1 <- lm(formula = log(boot2) ~ boot1 + I(boot1^2), data = m_boot) #Calculo de los nuevos coeficientes
-  betas_boot1 <- modelo_boot1$coefficients [2] #Seleccion de los nuevos betas con bootstrap
-  betas_repeticiones[i] <- betas_boot1 #Almanecamiento de los nuevos betas
-}
-
-#Calcular los cuantiles de confianza de la matriz
-quantiles_boot <- quantile(betas_repeticiones, probs = c(0.025,0.975))
-
-#Ver los resultados de los cuantiles en la variable age.
-quantiles_boot
-
-#Graficar el histograma
-
-hist(betas_repeticiones, las=1,
-     main = "Distribución de muestra",
-     xlim = c(-0.1,0.1),
-     xlab = "Betas",
-     ylim = c(0,200),
-     ylab = "Frecuencia",
-     col = "blue")
-
-abline(v=quantiles_boot, col = "green", lwd =2, lty=2)
-legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
-
-
-
-#-----
-
 #https://rpubs.com/andrew32118/Bootstrap
 
 # Realizar el remuestreo (bootstrap) de tamaño 1000 con reemplazos sobre la variable age
@@ -394,7 +357,7 @@ legend("topright", legend = c("Intervalos", "Cuantiles"), col = c("red","green")
 
 ```
 
-## 4.La brecha salarial de género. ---- ZAIRA Y LAURA
+## 4.La brecha salarial de género. 
 
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
 
@@ -451,7 +414,8 @@ residuos_female <- residuals(reg_female_residuos)
 reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario)
 
 
-stargazer(reg_female_controles , reg_residuos_female, type = "text")
+stargazer(reg_female_controles , reg_residuos_female, type = "text",
+          column.labels = c("Modelo Condicional", "Modelo Incondicional"))
 ```
 De los resultados de las regresiones se puede observar que el teorema FWL se cumple porque los coeficientes de los betas son iguales
 
@@ -511,12 +475,9 @@ ggplot(df_salario) +
 
 ```
 
-## 5. Predicción de ingresos---- NICOLAS Y JORGE
 
-A. Nicolas
-B. Zaira
-C. Jorge
-D. Jorge y Nicolas
+
+
 # Referencias 
 
 1. Pinedo, W. C., del Aguila, W. C., & Alvarado, G. D. P. P. (2022). Un análisis de la evasión tributaria.Ciencia Latina Revista Científica Multidisciplinar,6(2), 3224-3241. 
