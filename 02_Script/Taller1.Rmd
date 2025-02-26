@@ -525,16 +525,16 @@ split_data <- data.frame(
 )
 
 # Crear el gráfico
-library(ggplot2)
-ggplot(split_data, aes(x = Split, y = Count)) + 
-  geom_bar(stat = "identity", fill = "darkblue", width = 0.5) + 
+ggplot(split_data, aes(x = Split, y = Count, fill = factor(Split))) + 
+  geom_bar(stat = "identity", width = 0.5) + 
   geom_text(aes(label = paste0(round(Percentage, 1), "%\n(n=", Count, ")")),
             vjust = -0.5, color = "black", size = 4) + 
   labs(title = "Distribución de la división de la muestra de entrenamiento y prueba",
        y = "Número de observaciones",
        x = "") + 
   theme_bw() + 
-  ylim(0, max(split_data$Count) * 1.2)  
+  ylim(0, max(split_data$Count) * 1.2) + 
+  scale_fill_manual(values = c("lightblue", "lightsalmon"))  
 ```
 
 ### 5.2 Comparación del rendimiento predictivo en términos de RMSE
