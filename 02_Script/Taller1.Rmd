@@ -47,14 +47,15 @@ Para llevar a cabo el análisis, utilizamos "pacman" para facilitar la carga e i
 ```{r}
 if(!require(pacman)) install.packages("pacman") ; require(pacman)
 
-p_load(rvest,     # permite realizar web scraping en R
+p_load(rvest,     # Permite realizar web scraping en R
        dplyr,     # Permite manipulación y transformación de los datos
-       skimr,     # resumen estadístico
-       visdat,    # visualización de missing values
-       corrplot,  # correlation plots
+       skimr,     # Resumen estadístico
+       visdat,    # Visualización de missing values
+       corrplot,  # Correlation plots
        stargazer, # Tables/outputs to tex
-       ggplot2,    # graficación
-       boot
+       ggplot2,   # Graficación
+       boot,      # Permite aplicar bootstrap
+       tidyverse  # Análisis y tranformación de datos
        )
 ```
 
@@ -83,6 +84,10 @@ for (i in 1:10) {
 
 # Unir todas las tablas en un solo dataframe
 df_GEIH <- bind_rows(todas_las_tablas)
+
+if ("...1" %in% colnames(df_GEIH)) {
+  df_GEIH <- df_GEIH %>% select(-`...1`)
+}
 ```
 
 #### 2. Proceso de inspección
