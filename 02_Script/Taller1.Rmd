@@ -532,39 +532,113 @@ ggplot(split_data, aes(x = Split, y = Count)) +
   ylim(0, max(split_data$Count) * 1.2)  
 ```
 
-#Modelos
+### 5.2 Comparación del rendimiento predictivo en términos de RMSE
+
+Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proponen cinco modelos adicionales que permitan identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estiamdos previamente. Por lo tanto, se tiene una totalidad de 8 modelos:
+
+#### Modelo 1: Regresión con Female y controles
+
+$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa  +  β4age + u$$
+
+#### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
+
+$$log(female) = β0 + β1educ + β2tiempoempresa  + β3age + u$$
+
+#### Modelo 3: Regresión con residuos de Female
+
+$$log(w) = β0 + β1residuosfemale + u$$
+
+#### Modelo 4: Modelo sin controles (solo female)
+
+$$log(w) = β0 + β1Female + β2tamañoempresa  + u$$
+
+#### Modelo 5: Modelo con interacciones (female x age)
+
+$$log(w) = β0 + β1Female + β2age + β3female*tiempoempresa + β4tiempoempresa + u$$
+
+#### Modelo 6: Modelo no lineal con tamaño empresa²
+
+$$log(w) = β0 + β1Female + β2tamaño_empresa + β3(tamañoempresa^2) + u$$
+
+#### Modelo 7: Modelo con variables adicional e interaciones
+
+$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa + β4age + β5formal + β6segusocial + β7female*segusocial + β8(age^2) + u$$
+
+#### Modelo 8:
+
+$$log(w) = β0 + β1Female + β2educ + β3female*educ + β4age + β5(age^2) + u$$
 
 ```{r}
+# Definición de modelos
+
 # Modelo 1: Regresión con Female y controles
-reg_female_controles <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
-                           data = df_salario)
+m1 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
+                           data = train_sample)
 
 # Modelo 2: Regresión auxiliar (FWL - residuos de Female)
-reg_female_residuos <- lm(female ~ max_nivel_educ + tiempo_empresa + age, 
-                          data = df_salario)
+m2 <- lm(female ~ max_nivel_educ + tiempo_empresa + age, 
+                          data = train_sample)
 
-residuos_female <- residuals(reg_female_residuos)
+train_sample$residuos_f_m2 <- residuals(m2)
 
 # Modelo 3: Regresión con residuos de Female
-reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario)
+m3 <- lm(log(salario_hora) ~ residuos_f_m2, data = train_sample)
 
 # Modelo 4: Modelo sin controles (solo female)
-mod_sin_controles <- lm(log(salario_hora) ~ female + tamaño_empresa, data = df_salario)
+m4 <- lm(log(salario_hora) ~ female + tamaño_empresa, data = train_sample)
 
 # Modelo 5: Modelo con interacciones (female x age)
-mod_interaccion <- lm(log(salario_hora) ~ female + age + female:tiempo_empresa + tiempo_empresa, data = df_salario)
+m5 <- lm(log(salario_hora) ~ female + age + female:tiempo_empresa + tiempo_empresa, data = train_sample)
 
 # Modelo 6: Modelo no lineal con tamaño empresa²
-mod_nolineal <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), data = df_salario)
+m6 <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), data = train_sample)
 
 # Modelo 7: Modelo con variables adicional
-mod_var_adicionales <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
-                          data = df_salario)
+m7 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
+                          data = train_sample)
 
 # Modelo 8: 
-mod_var_adicionales <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + edad + I(edad^2), data = df_salario
+m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + age + I(age^2), data = train_sample)
 
+test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
+```
 
+Luego de definir los modelos, se procede con las respectivas predicciones, además de comparar los resultados del RMSE para identificar el modelo con el mejor rendimiento predictivo.
+
+```{r}
+# Generar predicciones y RMSE
+pred_1 <- predict(m1, test_sample)
+salario_1 <- RMSE(pred_1, test_sample$salario_hora)
+
+pred_2 <- predict(m2, test_sample)
+salario_2 <- RMSE(pred_2, test_sample$salario_hora)
+
+pred_3 <- predict(m3, test_sample)
+salario_3 <- RMSE(pred_3, test_sample$salario_hora)
+
+pred_4 <- predict(m4, test_sample)
+salario_4 <- RMSE(pred_4, test_sample$salario_hora)
+
+pred_5 <- predict(m5, test_sample)
+salario_5 <- RMSE(pred_5, test_sample$salario_hora)
+
+pred_6 <- predict(m6, test_sample)
+salario_6 <- RMSE(pred_6, test_sample$salario_hora)
+
+pred_7 <- predict(m7, test_sample)
+salario_7 <- RMSE(pred_7, test_sample$salario_hora)
+
+pred_8<- predict(m8, test_sample)
+salario_8 <- RMSE(pred_8, test_sample$salario_hora)
+
+# Crear la tabla con los RMSE
+mse_table <- data.frame(
+  Modelo = c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"),
+  MSE = c(salario_1, salario_2, salario_3, salario_4, salario_5, salario_6, salario_7, salario_8)
+)
+
+# Imprimir la tabla para comparar los RMSE
+print(mse_table)
 ```
 
 # Referencias
