@@ -55,7 +55,8 @@ p_load(rvest,     # Permite realizar web scraping en R
        stargazer, # Tables/outputs to tex
        ggplot2,   # Graficación
        boot,      # Permite aplicar bootstrap
-       tidyverse  # Análisis y tranformación de datos
+       tidyverse, # Análisis y tranformación de datos
+       caret      # Predicción de modelos
        )
 ```
 
@@ -646,7 +647,6 @@ mse_table <- data.frame(
 print(mse_table)
 ```
 
-
 ```{r}
 # Definición de modelos
 
@@ -715,7 +715,6 @@ mse_table <- data.frame(
 # Imprimir la tabla
 print(mse_table)
 ```
-
 
 ```{r}
 #Calculo errores de predicción
