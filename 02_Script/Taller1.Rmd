@@ -726,6 +726,8 @@ mse_table <- data.frame(
 print(mse_table)
 ```
 
+Calculo de RMSE por valor real
+
 ```{r}
 # Definición de modelos
 
@@ -794,6 +796,78 @@ mse_table <- data.frame(
 # Imprimir la tabla
 print(mse_table)
 ```
+
+Calculo de RMSE en log
+
+```{r}
+# Definición de modelos
+
+# Modelo 1: Regresión con Female y controles
+m1 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
+                           data = train_sample)
+
+# Modelo 2: Regresión auxiliar (FWL - residuos de Female)
+m2 <- lm(female ~ max_nivel_educ + tiempo_empresa + age, 
+                          data = train_sample)
+
+train_sample$residuos_f_m2 <- residuals(m2)
+
+# Modelo 3: Regresión con residuos de Female
+m3 <- lm(log(salario_hora) ~ residuos_f_m2, data = train_sample)
+
+# Modelo 4: Modelo sin controles (solo female)
+m4 <- lm(log(salario_hora) ~ female + tamaño_empresa, data = train_sample)
+
+# Modelo 5: Modelo con interacciones (female x age)
+m5 <- lm(log(salario_hora) ~ female + age + female:tiempo_empresa + tiempo_empresa, data = train_sample)
+
+# Modelo 6: Modelo no lineal con tamaño empresa²
+m6 <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), data = train_sample)
+
+# Modelo 7: Modelo con variables adicional
+m7 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
+                          data = train_sample)
+
+# Modelo 8: 
+m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + age + I(age^2), data = train_sample)
+
+test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
+
+# Generar predicciones y RMSE
+pred_1_log <- predict(m1, test_sample)
+salario_1_log <- RMSE(pred_1_log, log(test_sample$salario_hora))
+
+pred_2_log <- predict(m2, test_sample)
+salario_2_log <- RMSE(pred_2_log, log(test_sample$salario_hora))
+
+pred_3_log <- predict(m3, test_sample)
+salario_3_log <- RMSE(pred_3_log, log(test_sample$salario_hora))
+
+pred_4_log <- predict(m4, test_sample)
+salario_4_log <- RMSE(pred_4_log, log(test_sample$salario_hora))
+
+pred_5_log <- predict(m5, test_sample)
+salario_5_log <- RMSE(pred_5_log, log(test_sample$salario_hora))
+
+pred_6_log <- predict(m6, test_sample)
+salario_6_log <- RMSE(pred_6_log, log(test_sample$salario_hora))
+
+pred_7_log <- predict(m7, test_sample)
+salario_7_log <- RMSE(pred_7_log, log(test_sample$salario_hora))
+
+pred_8_log<- predict(m8, test_sample)
+salario_8_log <- RMSE(pred_8_log, log(test_sample$salario_hora))
+
+# Crear la tabla con los MSE
+mse_table <- data.frame(
+  Modelo = c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"),
+  MSE = c(salario_1_log, salario_2_log, salario_3_log, salario_4_log, salario_5_log, salario_6_log, salario_7_log, salario_8_log)
+)
+
+# Imprimir la tabla
+print(mse_table)
+```
+
 
 ```{r}
 #Calculo errores de predicción
@@ -886,6 +960,24 @@ m7_loocv <- train(form_7,
 rmse_m7_loocv_real <- RMSE(exp(m7_loocv$pred$pred), exp(m7_loocv$pred$obs))
 
 cat("Modelo 7 - LOOCV RMSE (Original):", round(rmse_m7_loocv_real, 2), "\n")
+
+```
+
+Tabla comparativa de RMSE 
+
+```{r}
+# Crear la tabla
+comparacion_rmse <- data.frame(
+  Método = c("Validation Set", "Validation Set", "LOOCV", "LOOCV"),
+  Modelo = c("M1", "M7", "M1", "M7"),
+  RMSE_Log = format(c(salario_1_log, salario_7_log, rmse_m1_loocv_log, rmse_m7_loocv_log), scientific = FALSE),
+  RMSE_Original = c(sqrt(mean((exp(pred_1_log) - test_sample$salario_hora)^2)), 
+                    sqrt(mean((exp(pred_7_log) - test_sample$salario_hora)^2)), 
+                    rmse_m1_loocv_real, 
+                    rmse_m7_loocv_real)
+)
+
+print(comparacion_rmse)
 
 ```
 
