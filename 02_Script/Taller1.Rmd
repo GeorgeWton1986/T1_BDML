@@ -286,6 +286,31 @@ Significación: Según los resultados obtenidos en la regresión todos los coefi
 Bondad de ajuste: El R² es  0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajores indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo. 
 
 ```{r}
+# Obtener los coeficientes de la regresion log(w) = β0 + β1Age + β2Age2 + u
+
+coefs <- modelo_age_wage$coef
+coefs
+
+
+```
+```{r}
+#Extraer los coeficientes de la regresión
+
+b0 <- coefs [1] #Intercepto
+b1 <- coefs [2] #age
+b2 <- coefs [3] #age^2
+
+```
+
+```{r}
+#Obtener la edad pico del problema segun los betas obtindos
+
+peak_age <- -b1/(2*b2)
+peak_age
+
+```
+
+```{r}
 # Gráfico del perfil estimado de ingresos y edad
 
 edades <- unique(df_salario$age)  
