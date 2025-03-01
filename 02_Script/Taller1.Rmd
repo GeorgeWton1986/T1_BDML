@@ -289,7 +289,7 @@ $$
 \Delta log(\hat{w})/\Delta Age=\hat{β_1}+2\hat{β_2}Age
 $$
 
-Ahora, se puede mencionar que, la relacoón $$Log (w)$$ y $$\Delta Age$$ depende de la variable $$Age$$. Entonces, si se reemplaza el valor de 0 en la variable $$Age$$, se puede interpretar el coeficiente $$β_1$$ como el cambio marginal aproximado de pasar de 0 a 1. A continuación, estimaremos los coeficientes de la siguiente ecuación,
+Ahora, se puede mencionar que, la relación $$Log (w)$$ y $$\Delta Age$$ depende de la variable $$Age$$. Entonces, si se reemplaza el valor de 0 en la variable $$Age$$, se puede interpretar el coeficiente $$β_1$$ como el cambio marginal aproximado de pasar de 0 a 1. A continuación, estimaremos los coeficientes de la siguiente ecuación,
 
 ```{r}
 #Estimacion de regresion log (salario)
@@ -302,7 +302,7 @@ summary(modelo_age_wage)
 
 # Interpretación de los resultados de la regresión log (salario)
 
-El resultado de la estimación indica que la variable $$Age$$ genera una condicion de decrecimiento sobre el $$log(w)$$. De esta manera, tomaremos los multiplos de 18 años para realizar el analisis correspondiente. Veamos, cuando la variable $$Age$$ es igual a 18 años,  $$log(w)$$ es igual a XXXX. Ahora, cambiamos el valor a 36 años, $$log(w)$$ es igual a XXXX. por último, $$Age$$ sera 54 años y por lo tanto $$log(w)$$ es igual a XXXX. 
+El resultado de la estimación indica que el coeficiente $$Age$$ es positivo y $$Age^2$$ es negativo, esto predetermina que, valores pequeños en $$Age$$ tiene un efecto positivo en $$log(w)$$, por el contrario valores grandes en $$Age$$ genera una condicion de decrecimiento sobre el $$log(w)$$. De esta manera, tomaremos los multiplos de 18 años para realizar el analisis del cambio $$\Delta log(\hat{w})$$. Veamos, cuando la variable $$Age$$ es igual a 18 años,  $$\Delta log(\hat{w})$$ es igual a 2,66% Ahora, cambiamos el valor a 36 años, $$$\Delta log(\hat{w})$$ es igual a 0,69% por último, $$Age$$ sera 54 años y por lo tanto $$\Delta log(\hat{w})$$ es igual a -1,29%. 
 
 ```{r}
 # Gráfico del perfil estimado de ingresos y edad
@@ -333,7 +333,7 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 
 ```
 
-Con el analisis anterior, podemos observar el comportamiento de la ecuación estimada es parabolico, es decir, en la "edad pico" es el punto de inflexión. Es decir, todas las edades menores a la "edad pico", la variable $$log(w)$$ será cerciente y para edades mayores a la "edad pico" la varible $$log(w)$$ seran decreciente. Asi las cosas, es necesario conocer como se calcula el punto de inflexión.
+Con el analisis anterior, podemos observar el comportamiento de la ecuación estimada es parabolico, es decir, en la "edad pico" se encuentra el punto de inflexión. Todas las edades menores a la "edad pico", la variable $$log(\hat{w})$$ será cerciente y para edades mayores a la "edad pico" la varible $$log(\hat{w})$$ seran decreciente. Asi las cosas, es necesario conocer como se calcula el punto de inflexión.
 
 $$
 \Delta log(\hat{w})/\Delta Age=0
