@@ -6,9 +6,9 @@ date: "2025-02-01"
 output: html_document
 ---
 
-# Problem set 1
+# Problem set 1:Modelo de salario individual por hora
 
-## Introducción
+## 1. Introducción
 
 La Dirección de Impuestos y Aduanas Nacionales (DIAN) constituye la principal fuente de ingreso del Gobierno Central, según lo señala el Comité Autónomo de la Regla Fiscal (2024). Este ingreso es esencial para sostener los recursos fiscales de la Nación. Sin embargo, la economía colombiana enfrenta un significativo desafío: un déficit fiscal alimentado, en parte, por ingresos tributarios que, acumulados hasta noviembre de 2024, se situaron 10,8 billones de pesos por debajo de las proyecciones establecidas en el Marco Fiscal de Mediano Plazo (MFMP). Este marco define los límites de gasto del gobierno y es crucial para la estabilidad financiera del país.
 
@@ -24,11 +24,9 @@ Estudios como los de Espitia y Suárez (2017) y Rojas, Martínez, Álvarez y Far
 
 El presente trabajo se enfocará en la estimación de un modelo econométrico basado en datos de la Gran Encuesta Integrada de Hogares de 2018, realizada por el Departamento Administrativo Nacional de Estadística para Bogotá. Se analizarán las condiciones salariales de la población mayor de 18 años, utilizando diferentes métodos para predecir sus ingresos. La estructura del trabajo incluirá la descripción y limpieza de datos, el análisis de variables, la predicción de ingresos y las conclusiones y limitaciones del estudio.
 
-## Data
+## 2. Datos
 
-2.  Descripción de los Datos y Proceso de Limpieza
-
-2.1 Proceso de adquisición de los datos
+### (a) Descripción de los datos
 
 En la presente sección se realiza una descripción de los datos y el proceso de adquisición y limpieza obtenidos en la Gran Encuesta Integrada de Hogares (GEIH) para 2018, realizada por el Departamento Administrativo Nacional de Estadística para Bogotá del "Informe de Pobreza Monetaria y Desigualdad". Esta sección se enfoca en las personas empleadas mayores de dieciocho (18) años.
 
@@ -36,11 +34,9 @@ La GEIH proporciona información estadística del tamaño y estructura de la fue
 
 La GEIH tiene una muestra anual aproximada de 315,000 hogares a nivel nacional, lo que le confiere una mayor cobertura y permite generar indicadores más confiables para los principales indicadores del mercado laboral.
 
-La base de datos se encuentra almacenada en una página web, por lo que se realizó un scrap del sitio web <https://ignaciomsarmiento.github.io/GEIH2018_sample/>. En primer lugar, se exploró la URL para identificar la información almacenada, evidenciando que se encontraba dividida en 10 data chunks. Se inspeccionó cada una de ellas y se realizó una iteración para consolidar la información de cada tabla y crear un dataframe llamado df_GEIH con 32.177 observaciones con 178 variables.
+### (b) Proceso de adquisición de los datos
 
-## Modelo de salario individual por hora
-
-### Configuración inicial del ambiente
+#### Configuración inicial del ambiente de trabajo
 
 Para llevar a cabo el análisis, utilizamos "pacman" para facilitar la carga e instalación de varios paquetes en R que permiten la recolección, manipulación, exploración y visualización de datos. Así mismo, utilizaremos "p_load( )" para instalar y cargar multiples paquetes en unsa sola línea de codigo como se muestra a continuación:
 
@@ -60,11 +56,11 @@ p_load(rvest,     # Permite realizar web scraping en R
        )
 ```
 
-### Carga e inspección de los datos
+#### Proceso de extracción de datos
 
-#### 1. Proceso de carga de datos
+La base de datos se encuentra almacenada en una página web, por lo que se realizó un scrap del sitio web <https://ignaciomsarmiento.github.io/GEIH2018_sample/>. En primer lugar, se exploró la URL para identificar la información almacenada, evidenciando que se encontraba dividida en 10 data chunks. Se inspeccionó cada una de ellas y se realizó una iteración para consolidar la información de cada tabla y crear un dataframe llamado df_GEIH con 32.177 observaciones con 177 variables.
 
-LAU
+En el proceso de extraccción, se emplea el paquete `rvest` para analizar el contenido HTML y el paquete `dplyr` para combinar la lista de tablas en el dataframe, adicionalmente, se aplica una primera limpieza de los datos con el condicional `if` para eliminar la columna innecesaria de índice.
 
 ```{r}
 # Lista tablas
@@ -91,19 +87,11 @@ if ("...1" %in% colnames(df_GEIH)) {
 }
 ```
 
-#### 2. Proceso de inspección
-
-2.2 Proceso de limpieza de los datos
+#### Proceso de limpieza de los datos
 
 En primer lugar, se filtraron las personas ocupadas mayores de 18 años utilizando las variables "ocu" y "age". El término de personas ocupadas hace referencia a aquellos individuos que están trabajando en alguna actividad económica, ya sea de manera formal o informal, y que se encuentran dentro de la edad laboral. Para este análisis, se consideró que la edad legal para trabajar en Colombia es de 18 años, a partir de la cual no se aplican las restricciones que rigen para los menores de edad.
 
-Lo anterior fue el resultado de la exploración de los datos, en la que se identificaron variables similares, como "ocu" y "dsi". Ambas son variables dicotómicas: "dsi" toma el valor de 1 si la persona está desempleada y 0 en caso contrario, mientras que "ocu" toma el valor de 1 si la persona está ocupada y 0 si no lo está. Dado que nuestro análisis se enfoca en las personas que están trabajando, se eligió la variable "ocu", ya que permite estudiar específicamente a las personas ocupadas. De este filtro, se da como resultado una base de datos con 16.542 observaciones con 178 variables.
-
-Se procedió a identificar los datos faltantes. Para algunas variables, se utilizó el promedio de los valores disponibles, lo que resultó en una nueva base de datos denominada “df_salario” con 16,542 observaciones y 10 variables. Posteriormente, se calcularon los porcentajes de valores faltantes por cada variable y se graficó la distribución de estos porcentajes.
-
-En cuanto a la imputación de los valores faltantes, se abordó de acuerdo con el tipo de variable. Para las variables categóricas, como educación y seguridad social, se ordenaron de manera descendente y se calculó el valor más común en cada categoría, que fue utilizado para reemplazar los datos faltantes.
-
-Para la imputación de la variable continua, salario por hora, se analizó su distribución mediante un gráfico, observándose que presenta una cola hacia la derecha. Debido a esta distribución, se optó por imputar los valores faltantes con la mediana, ya que representa mejor el valor central de los datos. Finalmente, se verificó que no quedaran valores faltantes en la base de datos.
+Lo anterior fue el resultado de la exploración de los datos, en la que se identificaron variables similares, como "ocu" y "dsi". Ambas son variables dicotómicas: "dsi" toma el valor de 1 si la persona está desempleada y 0 en caso contrario, mientras que "ocu" toma el valor de 1 si la persona está ocupada y 0 si no lo está. Dado que nuestro análisis se enfoca en las personas que están trabajando, se eligió la variable "ocu", ya que permite estudiar específicamente a las personas ocupadas. De este filtro, se da como resultado una base de datos con 16.542 observaciones con 177 variables.
 
 ```{r}
 # Resumen de la Base de datos df_GEIH
@@ -121,33 +109,31 @@ df_filtrado <- df_GEIH %>%
   filter(age >= 18, ocu == 1) 
 
 head(df_filtrado)
-
-# Limpieza de datos 
 ```
 
-## Elección de varibles y valores faltantes
+#### Elección de variables
 
-#### 1. Elección de variables
+Se construye un nuevo dataframe a partir de la Gran Encuesta Integrada de Hogares (GEIH), seleccionando las variables relevantes para el presente análisis. El objetivo es modelar y explicar el salario por hora de una persona en función de diversas características individuales y laborales.
 
-Se crea un nuevo data frame para con algunas de las variables que hacen parte de la GEIH, con el objetivo de explicar el salario por hora de una persona. A continuación se explican las variables elegidas y su pertinencia para la estimación del modelo.
+A continuación, se describen las variables elegidas y su pertinencia en la estimación del modelo, justificando su inclusión con base en la teoría económica y la literatura empírica sobre determinantes salariales.
 
--   Y_total_m_ha (Ingreso total mensual): Esta variable es la independiente y capta el salario total mensual que recibe un trabajador, que es directamente el objeto de análisis en estudios de salarios.
+-   **Y_total_m_ha (Ingreso total mensual):** Esta variable es la dependiente y capta el salario total mensual que recibe un trabajador, que es directamente el objeto de análisis en estudios de salarios.
 
--   Age (Edad): La edad influye en los salarios, ya que está vinculada a la experiencia laboral y las habilidades adquiridas a lo largo del tiempo. En general, la relación entre edad y salario es positiva hasta cierto punto, ya que la experiencia suele traducirse en mayores ingresos. Sin embargo, en etapas más avanzadas, esta relación puede estabilizarse o incluso disminuir. Según X, los jóvenes enfrentan tasas de desempleo más altas en el mercado laboral, mientras que las personas de mayor edad suelen experimentar períodos de desempleo más cortos, pero con una duración más prolongada. Orlando, A. (2000). DNP.
+-   **Age (Edad):** La edad influye en los salarios, ya que está vinculada a la experiencia laboral y las habilidades adquiridas a lo largo del tiempo. En general, la relación entre edad y salario es positiva hasta cierto punto, ya que la experiencia suele traducirse en mayores ingresos. Sin embargo, en etapas más avanzadas, esta relación puede estabilizarse o incluso disminuir. Según X, los jóvenes enfrentan tasas de desempleo más altas en el mercado laboral, mientras que las personas de mayor edad suelen experimentar períodos de desempleo más cortos, pero con una duración más prolongada. Orlando, A. (2000). DNP.
 
--   Sex (Género): Esta variable es una dummy que toma el valor de 1 si la persona es mujer y 0 si es hombre. Su relevancia radica en el análisis de las diferencias salariales entre géneros. En numerosos estudios económicos, se ha observado la existencia de una brecha salarial de género, donde, en promedio, las mujeres ganan menos que los hombres por realizar el mismo trabajo o tareas similares. La teoría de discriminación laboral de Joan Robinson (1933) sostiene que, aunque hombres y mujeres sean igualmente productivos, las mujeres recibirán un salario inferior debido a que la curva de oferta laboral femenina es menos elástica que la masculina. (Cuervo Alvarado, M., 2022).
+-   **Sex (Género):** Esta variable es una dummy que toma el valor de 1 si la persona es mujer y 0 si es hombre. Su relevancia radica en el análisis de las diferencias salariales entre géneros. En numerosos estudios económicos, se ha observado la existencia de una brecha salarial de género, donde, en promedio, las mujeres ganan menos que los hombres por realizar el mismo trabajo o tareas similares. La teoría de discriminación laboral de Joan Robinson (1933) sostiene que, aunque hombres y mujeres sean igualmente productivos, las mujeres recibirán un salario inferior debido a que la curva de oferta laboral femenina es menos elástica que la masculina. (Cuervo Alvarado, M., 2022).
 
--   MaxEducLevel (Máximo nivel educativo): El nivel educativo es una variable clave que afecta el salario. Los individuos con mayor nivel educativo suelen tener acceso a trabajos mejor remunerados debido a que se asocia con mayor capital humano, habilidades y capacidades técnicas como lo define la teoría planteada por Becker (1964)
+-   **MaxEducLevel (Máximo nivel educativo):** El nivel educativo es una variable clave que afecta el salario. Los individuos con mayor nivel educativo suelen tener acceso a trabajos mejor remunerados debido a que se asocia con mayor capital humano, habilidades y capacidades técnicas como lo define la teoría planteada por Becker (1964).
 
--   P6426 (Tiempo en la empresa): Esta variable se refiere al número de años que una persona ha trabajado en la misma organización. Puede estar relacionada con el aumento salarial por antigüedad. Según Gary Becker y Robert E. Lucas Jr., el capital humano abarca las habilidades y cualidades que hacen a las personas más productivas, siendo así un motor clave para el desarrollo organizacional. Este capital se convierte en una ventaja fundamental para las empresas, permitiéndoles desempeñarse eficazmente en su entorno. (Cuervo Alvarado, M., 2022).
+-   **P6426 (Tiempo en la empresa):** Esta variable se refiere al número de años que una persona ha trabajado en la misma organización. Puede estar relacionada con el aumento salarial por antigüedad. Según Gary Becker y Robert E. Lucas Jr., el capital humano abarca las habilidades y cualidades que hacen a las personas más productivas, siendo así un motor clave para el desarrollo organizacional. Este capital se convierte en una ventaja fundamental para las empresas, permitiéndoles desempeñarse eficazmente en su entorno. (Cuervo Alvarado, M., 2022).
 
--   P6870 (Tamaño de la empresa): El tamaño de la empresa es una variable clave en la determinación salarial. Según Cuervo Alvarado (2022), las pequeñas empresas, que emplean de 1 a 10 personas, son determinantes en el tamaño y la producción de la industria. Sin embargo, en general, las empresas más grandes tienen una mayor capacidad económica, lo que les permite ofrecer salarios más altos y proporcionar mejores compensaciones a sus empleados.
+-   **P6870 (Tamaño de la empresa):** El tamaño de la empresa es una variable clave en la determinación salarial. Según Cuervo Alvarado (2022), las pequeñas empresas, que emplean de 1 a 10 personas, son determinantes en el tamaño y la producción de la industria. Sin embargo, en general, las empresas más grandes tienen una mayor capacidad económica, lo que les permite ofrecer salarios más altos y proporcionar mejores compensaciones a sus empleados.
 
--   Depto (Departamento): El departamento o área de trabajo de un empleado puede influir en el salario. Diferentes departamentos tienen diferentes niveles de remuneración, dependiendo de la especialización, la demanda de las habilidades y el tipo de trabajo realizado.
+-   **Depto (Departamento):** El departamento de un empleado puede influir en el salario. Diferentes departamentos tienen diferentes niveles de remuneración, dependiendo de la especialización, la demanda de las habilidades y el tipo de trabajo realizado.
 
--   Formal (Formalidad del empleo): Según Orlando (2000), en su informe del DNP, la formalidad del empleo se refiere a si el trabajador está registrado formalmente o si trabaja en la informalidad. Los trabajos formales suelen tener mejores salarios, beneficios y seguridad social, mientras que los trabajos informales presentan salarios más bajos y menor estabilidad.
+-   **Formal (Formalidad del empleo):** Según Orlando (2000), en su informe del DNP, la formalidad del empleo se refiere a si el trabajador está registrado formalmente o si trabaja en la informalidad. Los trabajos formales suelen tener mejores salarios, beneficios y seguridad social, mientras que los trabajos informales presentan salarios más bajos y menor estabilidad.
 
--   P6100 (Seguridad social): La Organización Internacional del Trabajo hace referencia al régimen al que un trabajador está afiliado dentro del sistema de salud. El acceso a la seguridad social, especialmente a través de los diferentes regímenes (contributivo, especial y subsidiado), está estrechamente vinculado con la estabilidad económica y las oportunidades de ingresos.
+-   **P6100 (Seguridad social):** La Organización Internacional del Trabajo hace referencia al régimen al que un trabajador está afiliado dentro del sistema de salud. El acceso a la seguridad social, especialmente a través de los diferentes regímenes (contributivo, especial y subsidiado), está estrechamente vinculado con la estabilidad económica y las oportunidades de ingresos.
 
 ```{r}
 # Nuevo data frame
@@ -199,7 +185,13 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
     -   segu_social:
 
-#### 2. Valores faltantes
+#### Valores faltantes
+
+Se procedió a identificar los datos faltantes. Para algunas variables, se utilizó el promedio de los valores disponibles, lo que resultó en una nueva base de datos denominada “df_salario” con 16,542 observaciones y 10 variables. Posteriormente, se calcularon los porcentajes de valores faltantes por cada variable y se graficó la distribución de estos porcentajes.
+
+En cuanto a la imputación de los valores faltantes, se abordó de acuerdo con el tipo de variable. Para las variables categóricas, como educación y seguridad social, se ordenaron de manera descendente y se calculó el valor más común en cada categoría, que fue utilizado para reemplazar los datos faltantes.
+
+Para la imputación de la variable continua, salario por hora, se analizó su distribución mediante un gráfico, observándose que presenta una cola hacia la derecha. Debido a esta distribución, se optó por imputar los valores faltantes con la mediana, ya que representa mejor el valor central de los datos. Finalmente, se verificó que no quedaran valores faltantes en la base de datos.
 
 Con el resumen de estadísticas del nuevo data frame creado, se identifica la cantidad de valores faltantes (n_missing) en las variables salario_hora, segu_social y max_nivel_educ. A continuación, se procede a validar la información e imputar los valores faltantes de acuerdo a las caracterísitcas de las variables para poder estimar los modelos más adelante.
 
@@ -276,8 +268,7 @@ $$
 log(w) = β_0 + β_1Age + β_2Age^2+ u    (2)
 $$
 
-
-Ademas, es importante recordar que el estimador $$β_1$$ no mide la variacion en $$Log (w)$$, porque, al realizar un analisis ceteris paribus sobre la variable $$Age^2$$, la variable $$age$$ será constante.  Por lo tanto, la ecuación estimada, es: 
+Ademas, es importante recordar que el estimador $$β_1$$ no mide la variacion en $$Log (w)$$, porque, al realizar un analisis ceteris paribus sobre la variable $$Age^2$$, la variable $$age$$ será constante. Por lo tanto, la ecuación estimada, es:
 
 $$
 log(\hat{w})=\hat{β_0}+\hat{β_1}Age+\hat{β_2}Age^2
@@ -299,10 +290,9 @@ summary(modelo_age_wage)
 
 ```
 
-
 # Interpretación de los resultados de la regresión log (salario)
 
-El resultado de la estimación indica que la variable $$Age$$ genera una condicion de decrecimiento sobre el $$log(w)$$. De esta manera, tomaremos los multiplos de 18 años para realizar el analisis correspondiente. Veamos, cuando la variable $$Age$$ es igual a 18 años,  $$log(w)$$ es igual a XXXX. Ahora, cambiamos el valor a 36 años, $$log(w)$$ es igual a XXXX. por último, $$Age$$ sera 54 años y por lo tanto $$log(w)$$ es igual a XXXX. 
+El resultado de la estimación indica que la variable $$Age$$ genera una condicion de decrecimiento sobre el $$log(w)$$. De esta manera, tomaremos los multiplos de 18 años para realizar el analisis correspondiente. Veamos, cuando la variable $$Age$$ es igual a 18 años, $$log(w)$$ es igual a XXXX. Ahora, cambiamos el valor a 36 años, $$log(w)$$ es igual a XXXX. por último, $$Age$$ sera 54 años y por lo tanto $$log(w)$$ es igual a XXXX.
 
 ```{r}
 # Gráfico del perfil estimado de ingresos y edad
@@ -358,6 +348,7 @@ coefs <- modelo_age_wage$coef
 coefs
 
 ```
+
 ```{r}
 #Extraer los coeficientes de la regresión
 
@@ -374,17 +365,14 @@ peak_age <- -b1/(2*b2)
 peak_age
 
 ```
-El punto de inflexión de la ecuacion estimada donde esta localizada la edad pico corresponde a 42.25 años. 
+
+El punto de inflexión de la ecuacion estimada donde esta localizada la edad pico corresponde a 42.25 años.
 
 Coeficientes: El intercepto indica un valor de 7.735 del logaritmo del salario cuando la edad es cero, algo que en terminos de interpretación no tiene un sentido práctico. El coeficiente de edad muestra como cambia el logaritmo del salario con cada año adicional de edad. En este caso por cada año adicional de edad el salario aumenta 4.6%. El coeficiente de edad\^2 refleja el efecto cuadrático de la edad. En este caso el valor es negativo, lo que indicaría que el salario aumenta hasta cierto punto y luego comienza a disminuir. Este valor se va a determinar en el analisis de "edad pico" para evaluar en que punto se produce el cambio.
 
 Significancia: Según los resultados obtenidos en la regresión todos los coeficientes obtenidos son estadisticamente significativos al 0.01 (99%).
 
 Bondad de ajuste: El R² es 0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajores indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo.
-
-
-
-
 
 # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
 
@@ -443,7 +431,6 @@ legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
 
 
 ```
-
 
 ## 4.La brecha salarial de género.
 
@@ -873,7 +860,6 @@ mse_table <- data.frame(
 print(mse_table)
 ```
 
-
 ```{r}
 #Calculo errores de predicción
 errores <- test_sample$salario_hora - predict(m7, test_sample)
@@ -968,7 +954,7 @@ cat("Modelo 7 - LOOCV RMSE (Original):", round(rmse_m7_loocv_real, 2), "\n")
 
 ```
 
-Tabla comparativa de RMSE 
+Tabla comparativa de RMSE
 
 ```{r}
 # Crear la tabla
@@ -985,7 +971,6 @@ comparacion_rmse <- data.frame(
 print(comparacion_rmse)
 
 ```
-
 
 LOOCV con laverage m1
 
@@ -1052,7 +1037,6 @@ for (i in 1:N) {
   sqrt(looCV_error)
   
 ```
-
 
 # Referencias
 
