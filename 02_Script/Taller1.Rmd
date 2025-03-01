@@ -376,50 +376,33 @@ set.seed(123)
 
 #LLamado de la función boot
 
-boot(df_salario, peak_age_fn,R=16542)
+peak_age_boot <- boot(df_salario, peak_age_fn,R=16542)
+peak_age_boot
 
-```
+#Crear un data frame que almacene los resultado de peak_age_boot
 
+peak_age_boot_df <- data.frame(peak_age = peak_age_boot$t)
+summary(peak_age_boot_df)
 
-
-```{r}
-# Función hallar estimadores edades
-edad_boot <- function(data ,index) {
-  
-          coef(lm(log(salario_hora) ~ age + I(age^2), 
-                          data = df_salario, 
-                          subset = index))[2]
-               }
-
-# Validación
-edad_boot(df_salario, 1:nrow(df_salario))
-  
-# Semilla para hacerlo reproducible
-set.seed(123)
-
-# Estimaciones y errores estandar
-est_boot <-  boot(df_salario, edad_boot, R = 1000)
-est_boot_coef <- est_boot$t
-est_boot_coef
-
-#Calcular los cuantiles de confianza de la matriz
-quan_edad_boot <- quantile(est_boot_coef, probs = c(0.025,0.975))
-quan_edad_boot
+#Calcular los cuantiles de confianza del peak_age_boot
+quan_peak_age_boot <- quantile(peak_age_boot_df$peak_age, probs = c(0.025,0.975))
+quan_peak_age_boot
 
 #Graficar el histograma
-hist(est_boot_coef, las=1,
+hist(peak_age_boot_df$peak_age, las=1,
      main = "Distribución de muestra",
-     xlim = c(0.035,0.06),
+     xlim = c(41,44),
      xlab = "Betas",
-     ylim = c(0,300),
+     ylim = c(0,3000),
      ylab = "Frecuencia",
      col = "blue")
 
-abline(v=quan_edad_boot, col = "green", lwd =2, lty=2)
+abline(v=quan_peak_age_boot, col = "green", lwd =2, lty=2)
 legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
 
 
 ```
+
 
 ## 4.La brecha salarial de género.
 
