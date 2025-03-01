@@ -345,7 +345,9 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 
 ```
 
-\# Análisis de la “edad pico” con sus respectivos intervalos de confianza.
+# Análisis de la “edad pico” con sus respectivos intervalos de confianza.
+
+
 
 ```{r}
 # Función hallar estimadores edades
