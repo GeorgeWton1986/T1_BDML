@@ -822,6 +822,73 @@ score_m1_loocv <- RMSE(exp(pred_m1_log), df_salario$salario_hora)
 cat("Modelo 1 - RMSE (Original):", round(score_m1_loocv, 2), "\n")
 ```
 
+LOOCV con laverage m1
+
+```{r}
+m1_full <- lm(form_1, data = df_salario)
+
+X<- model.matrix(m1_full)
+y <- model.response(model.frame(m1_full))
+
+beta_hat <- m1_full$coefficients
+  
+## Calculate the inverse of  (X'X), call it G_inv
+G_inv<- solve(t(X)%*%X)
+
+## and 1/1-hi
+vec<- 1/(1-hatvalues(m1_full))
+  
+N <- nrow(X)  # Number of observations
+LOO <- numeric(N)  # To store the errors
+
+  # Loop over each observation
+for (i in 1:N) {
+  # get the new beta
+  new_beta<- beta_hat  - vec[i] * G_inv %*% as.vector(X[i, ]) * m1_full$residuals[i]
+    ## get the new error
+    new_error<- (y[i]- (X[i, ] %*% new_beta))^2
+    LOO[i]<-  new_error
+  }
+  
+  looCV_error <- mean(LOO)
+  sqrt(looCV_error)
+
+```
+
+LOOCV con laverage m7
+
+```{r}
+m7_full <- lm(form_7, data = df_salario)
+
+X<- model.matrix(m7_full)
+y <- model.response(model.frame(m7_full))
+
+beta_hat <- m7_full$coefficients
+  
+## Calculate the inverse of  (X'X), call it G_inv
+G_inv<- solve(t(X)%*%X)
+
+## and 1/1-hi
+vec<- 1/(1-hatvalues(m7_full))
+  
+N <- nrow(X)  # Number of observations
+LOO <- numeric(N)  # To store the errors
+
+  # Loop over each observation
+for (i in 1:N) {
+  # get the new beta
+  new_beta<- beta_hat  - vec[i] * G_inv %*% as.vector(X[i, ]) * m7_full$residuals[i]
+    ## get the new error
+    new_error<- (y[i]- (X[i, ] %*% new_beta))^2
+    LOO[i]<-  new_error
+  }
+  
+  looCV_error <- mean(LOO)
+  sqrt(looCV_error)
+  
+```
+
+
 # Referencias
 
 1.  Pinedo, W. C., del Aguila, W. C., & Alvarado, G. D. P. P. (2022). Un análisis de la evasión tributaria.Ciencia Latina Revista Científica Multidisciplinar,6(2), 3224-3241.
