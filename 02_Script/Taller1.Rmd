@@ -271,7 +271,7 @@ sum(is.na(df_salario))
 Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”. En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
 
 $$
-log(w) = β1 + β2Age + β3Age2 + u    (2)
+log(w) = β_0 + β_1Age + β_2Age^2+ u    (2)
 $$
 
 ```{r}
@@ -282,11 +282,13 @@ summary(modelo_age_wage)
 
 ```
 
+En economia es usual formular modelos con variables que tengan una condicion cuadratica, este tipo de modelos lo que buscan es captar los efectos marginales decrecientes o crecientes en la funcion. En este sentido, el modelo de estimación panteado esta en funcion de una sola variables (age)
+
 # Interpretación de los resultados de la regresión log (salario)
 
 Coeficientes: El intercepto indica un valor de 7.735 del logaritmo del salario cuando la edad es cero, algo que en terminos de interpretación no tiene un sentido práctico. El coeficiente de edad muestra como cambia el logaritmo del salario con cada año adicional de edad. En este caso por cada año adicional de edad el salario aumenta 4.6%. El coeficiente de edad\^2 refleja el efecto cuadrático de la edad. En este caso el valor es negativo, lo que indicaría que el salario aumenta hasta cierto punto y luego comienza a disminuir. Este valor se va a determinar en el analisis de "edad pico" para evaluar en que punto se produce el cambio.
 
-Significación: Según los resultados obtenidos en la regresión todos los coeficientes obtenidos son estadisticamente significativos al 0.01 (99%).
+Significancia: Según los resultados obtenidos en la regresión todos los coeficientes obtenidos son estadisticamente significativos al 0.01 (99%).
 
 Bondad de ajuste: El R² es 0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajores indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo.
 
@@ -392,7 +394,7 @@ quan_peak_age_boot
 hist(peak_age_boot_df$peak_age, las=1,
      main = "Distribución de muestra",
      xlim = c(41,44),
-     xlab = "Betas",
+     xlab = "Edad",
      ylim = c(0,3000),
      ylab = "Frecuencia",
      col = "blue")
