@@ -347,6 +347,39 @@ ggplot(df_pred, aes(x = edad, y = salario)) +
 
 # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
 
+```{r}
+# Función que obtiene los coefficientes de modelo
+
+peak_age_fn <- function(data ,index) {
+  
+          coef_boot <- lm(log(salario_hora) ~ age + I(age^2), 
+                          data = df_salario, 
+                          subset = index)
+          
+          coef_boot_b0 <- coef_boot$coefficients [1]
+          coef_boot_b1 <- coef_boot$coefficients [2]
+          coef_boot_b2 <- coef_boot$coefficients [3]
+          
+          peak_age_boot <- -coef_boot_b1/(2*coef_boot_b2)
+          
+          return(peak_age_boot)
+               }
+
+# Validación de la edad pico desde la fila 1 hasta la fila 16542 
+peak_age_fn(df_salario, 1:nrow(df_salario))
+
+length(df_salario$age)
+
+#Estimar la edad pico, sesgo y desviacion estandar por medio de Bootstrap
+
+set.seed(123)
+
+#LLamado de la función boot
+
+boot(df_salario, peak_age_fn,R=16542)
+
+```
+
 
 
 ```{r}
