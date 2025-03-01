@@ -338,15 +338,19 @@ Con el analisis anterior, podemos observar el comportamiento de la ecuación est
 $$
 \Delta log(\hat{w})/\Delta Age=0
 $$
+
 $$
 \Delta log(\hat{w})/\Delta Age=\hat{β_1}+2\hat{β_2}Age
 $$
+
 $$
 0=\hat{β_1}+2\hat{β_2}Age
 $$
+
 $$
 Age_{pico}=-\hat{β_1}/2\hat{β_2}
 $$
+
 ```{r}
 # Obtener los coeficientes de la regresion log(w) = β0 + β1Age + β2Age2 + u
 
@@ -370,6 +374,7 @@ peak_age <- -b1/(2*b2)
 peak_age
 
 ```
+El punto de inflexión de la ecuacion estimada donde esta localizada la edad pico corresponde a 42.25 años. 
 
 Coeficientes: El intercepto indica un valor de 7.735 del logaritmo del salario cuando la edad es cero, algo que en terminos de interpretación no tiene un sentido práctico. El coeficiente de edad muestra como cambia el logaritmo del salario con cada año adicional de edad. En este caso por cada año adicional de edad el salario aumenta 4.6%. El coeficiente de edad\^2 refleja el efecto cuadrático de la edad. En este caso el valor es negativo, lo que indicaría que el salario aumenta hasta cierto punto y luego comienza a disminuir. Este valor se va a determinar en el analisis de "edad pico" para evaluar en que punto se produce el cambio.
 
