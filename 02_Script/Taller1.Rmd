@@ -793,47 +793,148 @@ boxplot(errores, main = "Boxplot de Errores de Predicción", col = "lightblue")
 
 ```
 
-```{r}
-ctrl <- trainControl(method = "LOOCV")
-
-form_7 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2)
-m7_loocv <- train(form_7,
-                  data = df_salario,
-                  method = 'lm', 
-                  trControl= ctrl)
-m7_loocv 
-
-# Obtener predicciones en log
-pred_m7_log <- predict(m7_loocv, df_salario)  
-
-# Calcular RMSE en la escala original
-score_m7_loocv <- RMSE(exp(pred_m7_log), df_salario$salario_hora)
-
-# Mostrar resultado
-cat("Modelo 7 - RMSE (Original):", round(score_m7_loocv, 2), "\n")
-
-```
+LOOCV m1 con log
 
 ```{r}
 ctrl <- trainControl(method = "LOOCV")
 
 form_1 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age
 
-m1_loocv <- train(form_1,
+m1_loocv <- train(form_1, 
+                  data = df_salario, 
+                  method = 'lm', 
+                  trControl = ctrl)
+
+# Calcular RMSE en log
+rmse_m1_loocv_log <- RMSE(m1_loocv$pred$pred, m1_loocv$pred$obs)
+
+cat("Modelo 1 - LOOCV RMSE (Log):", round(rmse_m1_loocv_log, 6), "\n")
+
+```
+
+LOOCV m7 con log
+
+```{r}
+ctrl <- trainControl(method = "LOOCV")
+
+form_7 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2)
+
+m7_loocv <- train(form_7,
                   data = df_salario,
                   method = 'lm', 
                   trControl= ctrl)
-m1_loocv
 
-# Obtener predicciones en log
-pred_m1_log <- predict(m1_loocv, df_salario)  
+# Calcular RMSE en log
+rmse_m7_loocv_log <- RMSE(m7_loocv$pred$pred, m7_loocv$pred$obs)
 
-# Calcular RMSE en la escala original
-score_m1_loocv <- RMSE(exp(pred_m1_log), df_salario$salario_hora)
+cat("Modelo 7 - LOOCV RMSE (Log):", round(rmse_m7_loocv_log, 6), "\n")
 
-# Mostrar resultado
-cat("Modelo 1 - RMSE (Original):", round(score_m1_loocv, 2), "\n")
 ```
+
+LOOCV m1 con valor real
+
+```{r}
+ctrl <- trainControl(method = "LOOCV")
+
+form_1 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age
+
+m1_loocv <- train(form_1, 
+                  data = df_salario, 
+                  method = 'lm', 
+                  trControl = ctrl)
+
+# Calcular RMSE en log
+rmse_m1_loocv_real <- RMSE(exp(m1_loocv$pred$pred), exp(m1_loocv$pred$obs))
+
+cat("Modelo 1 - LOOCV RMSE (Original):", round(rmse_m1_loocv_real, 2), "\n")
+```
+
+LOOCV m7 con valor real
+
+```{r}
+ctrl <- trainControl(method = "LOOCV")
+
+form_7 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2)
+
+m7_loocv <- train(form_7,
+                  data = df_salario,
+                  method = 'lm', 
+                  trControl= ctrl)
+
+# Calcular RMSE en log
+rmse_m7_loocv_real <- RMSE(exp(m7_loocv$pred$pred), exp(m7_loocv$pred$obs))
+
+cat("Modelo 7 - LOOCV RMSE (Original):", round(rmse_m7_loocv_real, 2), "\n")
+
+```
+
+
+LOOCV con laverage m1
+
+```{r}
+m1_full <- lm(form_1, data = df_salario)
+
+X<- model.matrix(m1_full)
+y <- model.response(model.frame(m1_full))
+
+beta_hat <- m1_full$coefficients
+  
+## Calculate the inverse of  (X'X), call it G_inv
+G_inv<- solve(t(X)%*%X)
+
+## and 1/1-hi
+vec<- 1/(1-hatvalues(m1_full))
+  
+N <- nrow(X)  # Number of observations
+LOO <- numeric(N)  # To store the errors
+
+  # Loop over each observation
+for (i in 1:N) {
+  # get the new beta
+  new_beta<- beta_hat  - vec[i] * G_inv %*% as.vector(X[i, ]) * m1_full$residuals[i]
+    ## get the new error
+    new_error<- (y[i]- (X[i, ] %*% new_beta))^2
+    LOO[i]<-  new_error
+  }
+  
+  looCV_error <- mean(LOO)
+  sqrt(looCV_error)
+
+```
+
+LOOCV con laverage m7
+
+```{r}
+m7_full <- lm(form_7, data = df_salario)
+
+X<- model.matrix(m7_full)
+y <- model.response(model.frame(m7_full))
+
+beta_hat <- m7_full$coefficients
+  
+## Calculate the inverse of  (X'X), call it G_inv
+G_inv<- solve(t(X)%*%X)
+
+## and 1/1-hi
+vec<- 1/(1-hatvalues(m7_full))
+  
+N <- nrow(X)  # Number of observations
+LOO <- numeric(N)  # To store the errors
+
+  # Loop over each observation
+for (i in 1:N) {
+  # get the new beta
+  new_beta<- beta_hat  - vec[i] * G_inv %*% as.vector(X[i, ]) * m7_full$residuals[i]
+    ## get the new error
+    new_error<- (y[i]- (X[i, ] %*% new_beta))^2
+    LOO[i]<-  new_error
+  }
+  
+  looCV_error <- mean(LOO)
+  sqrt(looCV_error)
+  
+```
+
 
 # Referencias
 
