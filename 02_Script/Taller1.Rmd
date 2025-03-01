@@ -267,7 +267,7 @@ Una gran cantidad de evidencia en economía laboral sugiere que el perfil de eda
 En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
 
 $$
-log(w) = β1 + β2Age + β3Age2 + u	(2)
+log(w) = β0 + β1Age + β2Age2 + u	(2)
 $$
 
 ```{r}
