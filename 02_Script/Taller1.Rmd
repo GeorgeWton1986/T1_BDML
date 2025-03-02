@@ -683,77 +683,6 @@ Luego de definir los modelos, se procede con las respectivas predicciones, adem�
 ```{r}
 # Generar predicciones y RMSE
 pred_1 <- predict(m1, test_sample)
-salario_1 <- RMSE(pred_1, test_sample$salario_hora)
-
-pred_2 <- predict(m2, test_sample)
-salario_2 <- RMSE(pred_2, test_sample$salario_hora)
-
-pred_3 <- predict(m3, test_sample)
-salario_3 <- RMSE(pred_3, test_sample$salario_hora)
-
-pred_4 <- predict(m4, test_sample)
-salario_4 <- RMSE(pred_4, test_sample$salario_hora)
-
-pred_5 <- predict(m5, test_sample)
-salario_5 <- RMSE(pred_5, test_sample$salario_hora)
-
-pred_6 <- predict(m6, test_sample)
-salario_6 <- RMSE(pred_6, test_sample$salario_hora)
-
-pred_7 <- predict(m7, test_sample)
-salario_7 <- RMSE(pred_7, test_sample$salario_hora)
-
-pred_8<- predict(m8, test_sample)
-salario_8 <- RMSE(pred_8, test_sample$salario_hora)
-
-# Crear la tabla con los RMSE
-mse_table <- data.frame(
-  Modelo = c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"),
-  MSE = c(salario_1, salario_2, salario_3, salario_4, salario_5, salario_6, salario_7, salario_8)
-)
-
-# Imprimir la tabla para comparar los RMSE
-print(mse_table)
-```
-
-Calculo de RMSE por valor real
-
-```{r}
-# Definición de modelos
-
-# Modelo 1: Regresión con Female y controles
-m1 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
-                           data = train_sample)
-
-# Modelo 2: Regresión auxiliar (FWL - residuos de Female)
-m2 <- lm(female ~ max_nivel_educ + tiempo_empresa + age, 
-                          data = train_sample)
-
-train_sample$residuos_f_m2 <- residuals(m2)
-
-# Modelo 3: Regresión con residuos de Female
-m3 <- lm(log(salario_hora) ~ residuos_f_m2, data = train_sample)
-
-# Modelo 4: Modelo sin controles (solo female)
-m4 <- lm(log(salario_hora) ~ female + tamaño_empresa, data = train_sample)
-
-# Modelo 5: Modelo con interacciones (female x age)
-m5 <- lm(log(salario_hora) ~ female + age + female:tiempo_empresa + tiempo_empresa, data = train_sample)
-
-# Modelo 6: Modelo no lineal con tamaño empresa²
-m6 <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), data = train_sample)
-
-# Modelo 7: Modelo con variables adicional
-m7 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
-                          data = train_sample)
-
-# Modelo 8: 
-m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + age + I(age^2), data = train_sample)
-
-test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
-
-# Generar predicciones y RMSE
-pred_1 <- predict(m1, test_sample)
 salario_1 <- RMSE(exp(pred_1), test_sample$salario_hora)
 
 pred_2 <- predict(m2, test_sample)
@@ -787,80 +716,22 @@ mse_table <- data.frame(
 print(mse_table)
 ```
 
-Calculo de RMSE en log
+###5.c.i.ii. Discusión de los resultados de RMSE con Validation Set Approach
 
-```{r}
-# Definición de modelos
+Se evaluaron ocho especificaciones diferentes usando Validation Set Approach para medir el rendimiento predictivo de los modelos con la métrica RMSE, la cual indica un mejor desempeño predictivo entre más bajo sea su nivel. El resultado hace evidente que el Modelo 7 tiene el menor valor de RMSE, con un valor de 13,448.67, por lo tanto, es el mejor en términos de RMSE. Esto sugiere que incluir controles adicionales como si la persona cuenta con seguridad social, si está en un trabajo formal, entre otros, aporta información relevante para predecir el cambio en los salarios.
 
-# Modelo 1: Regresión con Female y controles
-m1 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age, 
-                           data = train_sample)
+El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 13,448.67. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable formal, segu_social, la interacción female:segu_social y un término cuadrático I(age^2). El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (13,604.31). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de female, max_nivel_educ, tiempo_empresa y age.
 
-# Modelo 2: Regresión auxiliar (FWL - residuos de Female)
-m2 <- lm(female ~ max_nivel_educ + tiempo_empresa + age, 
-                          data = train_sample)
+Los modelos con no linealidades e interacciones presentan mejoras en algunos casos, como el Modelo 8, que incorpora la interacción female:max_nivel_educ y logra un RMSE similar al Modelo 1 (13,644.11). El Modelo 2 es el peor en términos predictivos (RMSE = 16,113.97). Esto es esperado, ya que este modelo solo estima los residuos de female, sin utilizar directamente la variable dependiente log(salario_hora).
 
-train_sample$residuos_f_m2 <- residuals(m2)
+En términos generales, los modelos que incluyen mayores niveles de complejidad tienden a mejorar el desempeño predictivo, pero no todos los ajustes mejoran la precisión. La inclusión de interacciones y términos no lineales es útil solo si está bien justificada teóricamente.
 
-# Modelo 3: Regresión con residuos de Female
-m3 <- lm(log(salario_hora) ~ residuos_f_m2, data = train_sample)
 
-# Modelo 4: Modelo sin controles (solo female)
-m4 <- lm(log(salario_hora) ~ female + tamaño_empresa, data = train_sample)
-
-# Modelo 5: Modelo con interacciones (female x age)
-m5 <- lm(log(salario_hora) ~ female + age + female:tiempo_empresa + tiempo_empresa, data = train_sample)
-
-# Modelo 6: Modelo no lineal con tamaño empresa²
-m6 <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), data = train_sample)
-
-# Modelo 7: Modelo con variables adicional
-m7 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
-                          data = train_sample)
-
-# Modelo 8: 
-m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + age + I(age^2), data = train_sample)
-
-test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
-
-# Generar predicciones y RMSE
-pred_1_log <- predict(m1, test_sample)
-salario_1_log <- RMSE(pred_1_log, log(test_sample$salario_hora))
-
-pred_2_log <- predict(m2, test_sample)
-salario_2_log <- RMSE(pred_2_log, log(test_sample$salario_hora))
-
-pred_3_log <- predict(m3, test_sample)
-salario_3_log <- RMSE(pred_3_log, log(test_sample$salario_hora))
-
-pred_4_log <- predict(m4, test_sample)
-salario_4_log <- RMSE(pred_4_log, log(test_sample$salario_hora))
-
-pred_5_log <- predict(m5, test_sample)
-salario_5_log <- RMSE(pred_5_log, log(test_sample$salario_hora))
-
-pred_6_log <- predict(m6, test_sample)
-salario_6_log <- RMSE(pred_6_log, log(test_sample$salario_hora))
-
-pred_7_log <- predict(m7, test_sample)
-salario_7_log <- RMSE(pred_7_log, log(test_sample$salario_hora))
-
-pred_8_log<- predict(m8, test_sample)
-salario_8_log <- RMSE(pred_8_log, log(test_sample$salario_hora))
-
-# Crear la tabla con los MSE
-mse_table <- data.frame(
-  Modelo = c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"),
-  MSE = c(salario_1_log, salario_2_log, salario_3_log, salario_4_log, salario_5_log, salario_6_log, salario_7_log, salario_8_log)
-)
-
-# Imprimir la tabla
-print(mse_table)
-```
+###5.c.iii. Especificación del modelo con error de predicción: Modelo 7
 
 ```{r}
 #Calculo errores de predicción
-errores <- test_sample$salario_hora - predict(m7, test_sample)
+errores <- test_sample$salario_hora - exp(predict(m7, test_sample))
 
 #Distribución de los errores
 hist(errores, main = "Distribución de Errores de Predicción", 
@@ -870,52 +741,26 @@ hist(errores, main = "Distribución de Errores de Predicción",
 percentiles <- quantile(errores, probs = c(0.025, 0.975))
 outliers <- test_sample[errores < percentiles[1] | errores > percentiles[2], ]
 
+print(head(outliers))
+
 #Datos más extremos y box plot outliers
-head(outliers)
 boxplot(errores, main = "Boxplot de Errores de Predicción", col = "lightblue")
+abline(h = percentiles, col = "red", lty = 2) # 
 
 
 ```
+El histograma de errores de predicción muestra una distribución sesgada a la derecha, lo que indica que la mayoría de los errores son pequeños, pero existen algunas observaciones con diferencias extremadamente grandes entre el salario real y el predicho. El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 44444, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
 
-LOOCV m1 con log
+Desde el punto de vista de la DIAN, estos valores atípicos pueden indicar posibles irregularidades. Los individuos con ingresos extremadamente altos podrían estar no declarando información, lo que podría justificar una revisión adicional. También es posible que algunos outliers sean simplemente el resultado de errores en los datos, por lo que sería necesario verificar la calidad de la información. Otra posibilidad es que el modelo no haya capturado algunas características clave del mercado laboral, lo que explicaría por qué ciertas observaciones presentan errores tan grandes.
 
-```{r}
-ctrl <- trainControl(method = "LOOCV")
+En conclusión, la DIAN podría enfocarse en analizar más a fondo los outliers para determinar si reflejan ingresos no declarados, errores en los datos o simplemente limitaciones del modelo. Para mejorar la precisión de las predicciones, sería recomendable incluir nuevas variables que expliquen mejor los salarios atípicamente altos o bajos. También sería útil realizar un análisis más detallado sobre la naturaleza de estos empleos y sus características tributarias, para evaluar si requieren una revisión adicional.
 
-form_1 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age
 
-m1_loocv <- train(form_1, 
-                  data = df_salario, 
-                  method = 'lm', 
-                  trControl = ctrl)
+###5.d. Calculo de error predictivo con LOOCV
 
-# Calcular RMSE en log
-rmse_m1_loocv_log <- RMSE(m1_loocv$pred$pred, m1_loocv$pred$obs)
+Los dos modelos con menor RMSE en el paso anterior fueron el modelo 1 y el modelo 7, a continuación, se realizará el análisis correspondiente.
 
-cat("Modelo 1 - LOOCV RMSE (Log):", round(rmse_m1_loocv_log, 6), "\n")
-
-```
-
-LOOCV m7 con log
-
-```{r}
-ctrl <- trainControl(method = "LOOCV")
-
-form_7 <- log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2)
-
-m7_loocv <- train(form_7,
-                  data = df_salario,
-                  method = 'lm', 
-                  trControl= ctrl)
-
-# Calcular RMSE en log
-rmse_m7_loocv_log <- RMSE(m7_loocv$pred$pred, m7_loocv$pred$obs)
-
-cat("Modelo 7 - LOOCV RMSE (Log):", round(rmse_m7_loocv_log, 6), "\n")
-
-```
-
-LOOCV m1 con valor real
+Modelo 1 con LOOCV 
 
 ```{r}
 ctrl <- trainControl(method = "LOOCV")
@@ -933,7 +778,7 @@ rmse_m1_loocv_real <- RMSE(exp(m1_loocv$pred$pred), exp(m1_loocv$pred$obs))
 cat("Modelo 1 - LOOCV RMSE (Original):", round(rmse_m1_loocv_real, 2), "\n")
 ```
 
-LOOCV m7 con valor real
+Modelo 7 con LOOCV
 
 ```{r}
 ctrl <- trainControl(method = "LOOCV")
@@ -952,89 +797,86 @@ cat("Modelo 7 - LOOCV RMSE (Original):", round(rmse_m7_loocv_real, 2), "\n")
 
 ```
 
-Tabla comparativa de RMSE
+Modelo 1 con Leverage LOOCV 
 
 ```{r}
-# Crear la tabla
+# Modelo 1 con LOOCV y leverage
+m1_full <- lm(form_1, data = df_salario)
+
+X_m1 <- model.matrix(m1_full)
+y_m1 <- model.response(model.frame(m1_full))
+beta_hat_m1 <- m1_full$coefficients
+G_inv_m1 <- solve(t(X_m1) %*% X_m1)
+vec_m1 <- 1 / (1 - hatvalues(m1_full))
+N_m1 <- nrow(X_m1)
+LOO_m1 <- numeric(N_m1)
+
+for (i in 1:N_m1) {
+  new_beta_m1 <- beta_hat_m1 - vec_m1[i] * G_inv_m1 %*% as.vector(X_m1[i, ]) * m1_full$residuals[i]
+  new_error_m1 <- (y_m1[i] - (X_m1[i, ] %*% new_beta_m1))^2
+  LOO_m1[i] <- new_error_m1
+}
+
+rmse_m1_loocv_laverage_real <- sqrt(mean((exp(y_m1) - exp(X_m1 %*% new_beta_m1))^2))
+print(rmse_m1_loocv_laverage_real)
+
+```
+
+Modelo 7 con Leverage LOOCV 
+
+```{r}
+# Modelo 7 con LOOCV y leverage
+m7_full <- lm(form_7, data = df_salario)
+
+X_m7 <- model.matrix(m7_full)
+y_m7 <- model.response(model.frame(m7_full))
+beta_hat_m7 <- m7_full$coefficients
+G_inv_m7 <- solve(t(X_m7) %*% X_m7)
+vec_m7 <- 1 / (1 - hatvalues(m7_full))
+N_m7 <- nrow(X_m7)
+LOO_m7 <- numeric(N_m7)
+
+for (i in 1:N_m7) {
+  new_beta_m7 <- beta_hat_m7 - vec_m7[i] * G_inv_m7 %*% as.vector(X_m7[i, ]) * m7_full$residuals[i]
+  new_error_m7 <- (y_m7[i] - (X_m7[i, ] %*% new_beta_m7))^2
+  LOO_m7[i] <- new_error_m7
+}
+
+rmse_m7_loocv_laverage_real <- sqrt(mean((exp(y_m7) - exp(X_m7 %*% new_beta_m7))^2))
+print(rmse_m7_loocv_laverage_real)
+
+```
+
+Tabla comparativa RMSE con diferentes metolodologías
+
+```{r}
+# Tabla de comparación
 comparacion_rmse <- data.frame(
-  Método = c("Validation Set", "Validation Set", "LOOCV", "LOOCV"),
-  Modelo = c("M1", "M7", "M1", "M7"),
-  RMSE_Log = format(c(salario_1_log, salario_7_log, rmse_m1_loocv_log, rmse_m7_loocv_log), scientific = FALSE),
-  RMSE_Original = c(sqrt(mean((exp(pred_1_log) - test_sample$salario_hora)^2)), 
-                    sqrt(mean((exp(pred_7_log) - test_sample$salario_hora)^2)), 
-                    rmse_m1_loocv_real, 
-                    rmse_m7_loocv_real)
+  Modelo = c("M1", "M7"),
+  RMSE_VSA = c(
+    sqrt(mean((exp(pred_1_log) - test_sample$salario_hora)^2)), 
+    sqrt(mean((exp(pred_7_log) - test_sample$salario_hora)^2))
+  ),
+  RMSE_LOOCV = c(rmse_m1_loocv_real, rmse_m7_loocv_real),
+  RMSE_Leverage = c(rmse_m1_loocv_laverage_real, rmse_m7_loocv_laverage_real)
 )
 
 print(comparacion_rmse)
-
 ```
 
-LOOCV con laverage m1
+Comparación del error predictivo entre Validation Set Approach y LOOCV
 
-```{r}
-m1_full <- lm(form_1, data = df_salario)
+Se compararon los errores predictivos de los modelos M1 y M7 utilizando dos métodos de validación: el Validation Set Approach (VSA) y el Leave-One-Out Cross-Validation (LOOCV). Los resultados muestran que el RMSE obtenido con LOOCV es menor que el obtenido con el VSA para ambos modelos, lo que sugiere que la evaluación con LOOCV es más estable y menos dependiente de cómo se divida la muestra. En particular, el RMSE de M7 sigue siendo menor que el de M1 en ambos métodos, lo que refuerza la conclusión de que M7 tiene mejor desempeño predictivo.
 
-X<- model.matrix(m1_full)
-y <- model.response(model.frame(m1_full))
+Relación con la estadística de influencia (Leverage)
 
-beta_hat <- m1_full$coefficients
-  
-## Calculate the inverse of  (X'X), call it G_inv
-G_inv<- solve(t(X)%*%X)
+Los valores de RMSE calculados con LOOCV utilizando leverage muestran que las diferencias con el LOOCV tradicional son mínimas (por ejemplo, para M7, pasa de 12723.80 a 12721.74). Esto sugiere que las observaciones con alto leverage no están afectando significativamente la estabilidad del modelo en términos de error predictivo. En términos prácticos, esto implica que aunque algunas observaciones pueden tener un alto leverage, su impacto sobre la predicción global del modelo no es significativo. Si hubiera diferencias marcadas entre LOOCV normal y LOOCV con leverage, eso indicaría que ciertos puntos influyentes distorsionan la estimación de los coeficientes y, por ende, del error predictivo.
 
-## and 1/1-hi
-vec<- 1/(1-hatvalues(m1_full))
-  
-N <- nrow(X)  # Number of observations
-LOO <- numeric(N)  # To store the errors
+Conclusión
 
-  # Loop over each observation
-for (i in 1:N) {
-  # get the new beta
-  new_beta<- beta_hat  - vec[i] * G_inv %*% as.vector(X[i, ]) * m1_full$residuals[i]
-    ## get the new error
-    new_error<- (y[i]- (X[i, ] %*% new_beta))^2
-    LOO[i]<-  new_error
-  }
-  
-  looCV_error <- mean(LOO)
-  sqrt(looCV_error)
+El modelo M7 sigue siendo el mejor en términos de error predictivo, independientemente del método de validación utilizado. Además, la inclusión de leverage en los cálculos de LOOCV confirma que no hay observaciones individuales que estén afectando de manera desproporcionada la estabilidad del modelo. Esto da confianza en la robustez de los resultados obtenidos.
 
-```
 
-LOOCV con laverage m7
-
-```{r}
-m7_full <- lm(form_7, data = df_salario)
-
-X<- model.matrix(m7_full)
-y <- model.response(model.frame(m7_full))
-
-beta_hat <- m7_full$coefficients
-  
-## Calculate the inverse of  (X'X), call it G_inv
-G_inv<- solve(t(X)%*%X)
-
-## and 1/1-hi
-vec<- 1/(1-hatvalues(m7_full))
-  
-N <- nrow(X)  # Number of observations
-LOO <- numeric(N)  # To store the errors
-
-  # Loop over each observation
-for (i in 1:N) {
-  # get the new beta
-  new_beta<- beta_hat  - vec[i] * G_inv %*% as.vector(X[i, ]) * m7_full$residuals[i]
-    ## get the new error
-    new_error<- (y[i]- (X[i, ] %*% new_beta))^2
-    LOO[i]<-  new_error
-  }
-  
-  looCV_error <- mean(LOO)
-  sqrt(looCV_error)
-  
-```
 
 # Referencias
 
