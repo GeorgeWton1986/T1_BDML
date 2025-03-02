@@ -490,7 +490,7 @@ quan_peak_age_boot
 #Graficar el histograma
 
 p <- ggplot(peak_age_boot_df, aes(x = peak_age)) +
-  geom_histogram(fill = "gray70", color = "black", bins = 30) +  
+  geom_histogram(fill = "gray70", color = "black", bins = 30) +
   geom_vline(xintercept = quan_peak_age_boot, col = "black", linetype = "dashed", linewidth = 1) +  
   labs(title = "GRÁFICO 4-DISTRIBUCIÓN DE MUESTRA", 
        x = "Edad", 
