@@ -61,7 +61,7 @@ p_load(rvest,     # Permite realizar web scraping en R
 
 La base de datos se encuentra almacenada en una página web, por lo que se realizó scrapping del sitio web <https://ignaciomsarmiento.github.io/GEIH2018_sample/>. En primer lugar, se exploró la URL para identificar la información almacenada, evidenciando que se encontraba dividida en 10 data chunks. Se inspeccionó cada una de ellas y se realizó una iteración para consolidar la información de cada tabla y crear un dataframe llamado df_GEIH con 32.177 observaciones con 177 variables.
 
-En el proceso de extraccción, se emplea el paquete `rvest` para analizar el contenido de la página web y el paquete `dplyr` para combinar la lista de tablas en el dataframe, adicionalmente, se aplica una primera limpieza de los datos con el condicional `if` para eliminar la columna innecesaria de índice.
+En el proceso de extracción, se emplea el paquete `rvest` para analizar el contenido de la página web y el paquete `dplyr` para combinar la lista de tablas en el dataframe, adicionalmente, se aplica una primera limpieza de los datos con el condicional `if` para eliminar la columna innecesaria de índice.
 
 ```{r}
 # Lista tablas
