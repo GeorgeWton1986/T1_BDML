@@ -716,7 +716,7 @@ ggsave("divisionmuestra6.png", dpi = 300)
 
 ### 5.2 Comparación del rendimiento predictivo en términos de RMSE
 
-Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proponen cinco modelos adicionales que permitan identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estiamdos previamente. Por lo tanto, se tiene una totalidad de 8 modelos:
+Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proporcionaron cinco modelos adicionales que permiten identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estiamdos previamente. Asi las cosas, en total son 8 modelos:
 
 #### Modelo 1: Regresión con Female y controles
 
