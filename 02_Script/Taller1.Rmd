@@ -247,14 +247,14 @@ obs <- nrow(df_salario)
 base_faltantes<- base_faltantes %>% mutate(p_missing = n_missing/obs)
 base_faltantes
 
-# ordenar de forma descendente
+# Ordenar de forma descendente
 base_faltantes <- base_faltantes %>% arrange(-n_missing)
 
 # Mantener solo las variables con valores faltantes
 base_faltantes<- base_faltantes %>% filter(n_missing!= 0)
 base_faltantes
 
-# gráfica de los valores faltantes
+# Gráfica de los valores faltantes
 ggplot(base_faltantes, aes(x = reorder(skim_variable, -n_missing), y = p_missing, fill = skim_variable)) +
   geom_bar(stat = "identity", color = "black", fill = "gray70", width = 0.5) +  
   scale_y_continuous(labels = scales::percent) +  
@@ -351,9 +351,9 @@ t_modelo1 <- stargazer(modelo_age_wage,
                        digits = 3,
                        align = TRUE,
                        star.cutoffs = c(0.1, 0.05, 0.01)) 
-print(t_modelo1)
 
-
+# Guardar tabla
+writeLines(t_modelo1, "TABLA 1-MODELO DE SALARIO.txt")
 ```
 
 ### Interpretación de los resultados de la regresión log (salario)
@@ -486,10 +486,10 @@ El punto de inflexión de la ecuacion estimada donde esta localizada la edad pic
 
 ### Análisis de la “edad pico” con sus respectivos intervalos de confianza.
 
-Luego de estimar, predecir y analizar las ecuaciones y gráficas podemos sugerir que el comportamiento del salario en funcion de la edad en la población encuestada indica que los salarios son bajos a la edad de 18 años. Además, se noto que el salario mejora con el aumento de los años. No obstante, el ritmo de crecimiento del salario es más grande en comparación con edades medias, como por ejemplo, los 36 años, donde se registro un cambio de 0,69%. De otro lado, se registró la edad pico para este estudio en 42.25 años de edad, este punto es importante por dos razones. La primera, es el punto de inflexión entre el cambio positivo y el cambio negativo en el ingreso. la segunda, que en promedio se referencia la edad pico a los 50 años, esto puede sugerir que podemos tener otras variables que no fueron incluidas en el estudio/ecuación que generen una disminución de la edad y obtener mejores salarios.
+Luego de estimar y analizar las ecuaciones y gráficas podemos sugerir que el comportamiento del salario en funcion de la edad en la población encuestada indica que los salarios son bajos a la edad de 18 años. Además, se noto que el salario mejora con el aumento de los años. No obstante, el ritmo de crecimiento del salario es más grande en comparación con edades medias, como por ejemplo, los 36 años, donde se registro un cambio de 0,69%. De otro lado, se registró la edad pico para este estudio en 42.25 años de edad, este punto es importante por dos razones. La primera, es el punto de inflexión entre el cambio positivo y el cambio negativo en el ingreso. La segunda, que en promedio se referencia la edad pico a los 50 años, esto puede sugerir que podemos tener otras variables que no fueron incluidas en la estimación que generen una disminución de la edad y obtener mejores salarios.
 
 ```{r}
-# Función que obtiene los coefficientes de modelo
+# Función que obtiene los coeficientes de modelo
 
 peak_age_fn <- function(data ,index) {
   
@@ -511,25 +511,25 @@ peak_age_fn(df_salario, 1:nrow(df_salario))
 
 length(df_salario$age)
 
-#Estimar la edad pico, sesgo y desviacion estandar por medio de Bootstrap
+# Estimar la edad pico, sesgo y desviacion estandar por medio de Bootstrap
 
 set.seed(123)
 
-#LLamado de la función boot
+# LLamado de la función boot
 
 peak_age_boot <- boot(df_salario, peak_age_fn,R=1000)
 peak_age_boot
 
-#Crear un data frame que almacene los resultado de peak_age_boot
+# Crear un data frame que almacene los resultado de peak_age_boot
 
 peak_age_boot_df <- data.frame(peak_age = peak_age_boot$t)
 summary(peak_age_boot_df)
 
-#Calcular los cuantiles de confianza del peak_age_boot
+# Calcular los cuantiles de confianza del peak_age_boot
 quan_peak_age_boot <- quantile(peak_age_boot_df$peak_age, probs = c(0.025,0.975))
 quan_peak_age_boot
 
-#Graficar el histograma
+# Graficar el histograma
 
 p <- ggplot(peak_age_boot_df, aes(x = peak_age)) +
   geom_histogram(fill = "gray70", color = "black", bins = 30) +
@@ -551,48 +551,56 @@ ggsave("histogramadistribucionmuestra4.png", plot = p, dpi = 300, width = 8, hei
 
 ```
 
-En conclusion, es de notar que esta variable no es la unica que determina el valor, podriamos incluir, por ejemplo, la industria, la experiencia de laboral, la cantidad de años de estudio, ranking institucion educativa, etc. y otras que habilidades sociales que pueden ser dificiles de cuantificar en cuyo casos podria ayudar a explicar el comportamiento del salario en funcion de la edad.
+En conclusion, es de notar que esta variable no es la unica que determina el valor, podriamos incluir, por ejemplo, la industria, la experiencia de laboral, la cantidad de años de estudio, ranking institucion educativa, etc. así como otras habilidades sociales que pued en ser dificiles de cuantificar, en cuyo casos podria ayudar a explicar el comportamiento del salario en función de la edad.
 
-## 4.La brecha salarial de género.
+## 4. La brecha salarial de género
 
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
 
 $$
 log(w) = β_1 + β_2Female + u \quad (8)
-$$ donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
+$$ donde Female es un indicador que toma 1 si el individuo en la muestra se identifica como mujer y 0 si se identifica como hombre.
 
 ```{r}
-#Se crea la variable female en nuestra base
+# Se crea la variable female en nuestra base
 
 df_salario <- df_salario %>%
               mutate(female = ifelse(sex == 0, 1, 0))
 
-#Estimación de regresion log (salario) con female
+# Estimación de regresion log (salario) con female
 reg_female <- lm(formula = log(salario_hora) ~ female, data =df_salario)
 
-stargazer(reg_female, 
-          type = "text",            
-          title = "TABLA 3-MODELO DE SALARIO SEGÚN GÉNERO", 
-          dep.var.labels = "Log(Salario por Hora)",  
-          digits = 3,                
-          align = TRUE,           
-          star.cutoffs = c(0.1, 0.05, 0.01))
+t_reg_female <- stargazer(reg_female, 
+                          type = "text", 
+                          title = "TABLA 2-MODELO DE SALARIO SEGÚN GÉNERO", 
+                          dep.var.labels = "Log(Salario por Hora)", 
+                          digits = 3, 
+                          align = TRUE, 
+                          star.cutoffs = c(0.1, 0.05, 0.01))
 
+# Guardar tabla
+writeLines(t_reg_female, "TABLA 2-MODELO DE SALARIO SEGÚN GÉNERO.txt")
 ```
 
-\*Interpretación - Significancia global: El modelo es significativo al 0,01 (99%), es decir, la variable del modelo explica el salario por hora.
+### Interpretación de resultados
 
--   Bondad de ajuste: El R² es 0.002 y R² ajustado da el valor de 0.002 , esto indica que el modelo explica el salario en un 0.2%
+*Significancia global:* El modelo es significativo al 0,01 (99%), es decir, la variable del modelo explica el salario por hora.
 
--   El error estandar para este modelo es de0.787 y esto indica la dispersión entre las 16542 observaciones y la estimación.
+-   *Bondad de ajuste:* El R² es 0.002 y R² ajustado da el valor de 0.002 , esto indica que el modelo explica el salario en un 0.2%
 
--   Significancia parcial: La variable female es significativa al 0.01 (99%), el error estandar es de 0.012 y explica que si es mujer, en promedio el salario disminuye en 7.9%
+-   El *error estándar* para este modelo es de0.787 y esto indica la dispersión entre las 16542 observaciones y la estimación.
 
-## 4.1 Salario igual para trabajos iguales?
+-   *Significancia parcial:* La variable female es significativa al 0.01 (99%), el error estándar es de 0.012 y explica que si es mujer, en promedio el salario disminuye en 7.9%
 
-El eslogan "salario igual por trabajo igual" es una forma de interpretar que los empleados con características laborales similares, no debe existir ninguna brecha salarial de genero. En esta sección, se utilizará el modelo Frisch-Waugh-Lovell (FWL) para estimar la brecha salarial condicional, incorporando variables de control que reflejan las características semejantes de los trabajadores y los puestos de trabajo. El procedimiento se divide en tres pasos, que se describen a continuación:
+### ¿Salario igual para trabajos iguales?
 
-Paso 1: Estimación de la regresión con todos los predictores completos, y cálculo de los residuos u. Paso 2: Se realiza una regresión auxiliar utilizando los residuos obtenidos en el paso anterior. Paso 3: El Teorema de Frisch-Waugh-Lovell establece que los residuos de la primera y segunda regresión son numéricamente equivalentes.
+El *slogan* "salario igual por trabajo igual" es una forma de interpretar que los empleados con características laborales similares, no debe existir ninguna brecha salarial de género. En esta sección, se utilizará el modelo *Frisch-Waugh-Lovell* (FWL) para estimar la brecha salarial condicional, incorporando variables de control que reflejan las características semejantes de los trabajadores y los puestos de trabajo. El procedimiento se divide en tres pasos, que se describen a continuación:
+
+**Paso 1:** Estimación de la regresión con todos los predictores completos, y cálculo de los residuos *u*.
+
+**Paso 2**: Se realiza una regresión auxiliar utilizando los residuos (*u*) obtenidos en el paso anterior.
+
+**Paso 3:** Aplicar el Teorema de *Frisch-Waugh-Lovell* (FWL), donde establece que los residuos de la primera y segunda regresión son numéricamente equivalentes.
 
 ```{r}
 # PASO 1
@@ -608,40 +616,51 @@ reg_female_residuos <- lm(formula = female  ~ max_nivel_educ + tiempo_empresa + 
 residuos_female <- residuals(reg_female_residuos)
 
 # PASO 3
-#Correr la primera regresión con los residuos de female 
+# Correr la primera regresión con los residuos de female 
 reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario)
 
 
-stargazer(reg_female_controles, reg_residuos_female, 
-          type = "text", 
-          title = "TABLA 4-ESTIMACIÓN DE GÉNERO EN SALARIO",
-          column.labels = c("Modelo Condicional", "Modelo Incondicional"), 
-          covariate.labels = c("Mujer", "Nivel Educativo", "Tiempo en Empresa", "Edad", "Residuos de Mujer"),
-          dep.var.labels = "Log(Salario por Hora)",  
-          digits = 3,                
-          align = TRUE,           
-          star.cutoffs = c(0.1, 0.05, 0.01),
-          notes = c("Significancia: * p<0.1, ** p<0.05, *** p<0.01"))
+t_modelos3 <- stargazer(reg_female_controles, reg_residuos_female,
+                        type = "text", 
+                        title = "TABLA 3-COMPARACIÓN DE ESTIMACIONES DE GÉNERO EN SALARIO",
+                        column.labels = c("Modelo Condicional", "Modelo Incondicional"), 
+                        covariate.labels = c("Mujer", "Nivel Educativo", "Tiempo en Empresa", "Edad", "Residuos de Mujer"), 
+                        dep.var.labels = "Log(Salario por Hora)", 
+                        digits = 3, 
+                        align = TRUE, 
+                        star.cutoffs = c(0.1, 0.05, 0.01), 
+                        notes = c("Significancia: * p<0.1, ** p<0.05, *** p<0.01"))
+
+# Guardar tabla
+writeLines(t_modelos3, "TABLA 3-COMPARACIÓN DE ESTIMACIONES DE GÉNERO EN SALARIO.txt")
 ```
 
-Análisis del modelo condicional e incondicional:
+#### Análisis del modelo condicional e incondicional:
 
 El coeficiente de la variable "female" en ambos modelos sugiere que, en promedio, las mujeres ganan un 10.7% menos que los hombres en salario por hora, incluso después de controlar por variables como el nivel educativo, la antigüedad en la empresa y la edad. Ambas variables son estadísticamente significativas, y se observa que el error estándar del coeficiente en el modelo condicional es 0.011, mientras que en el modelo incondicional es ligeramente más alto, 0.012.
 
-El R² de ambos modelos es relativamente bajo, lo cual indica que estos modelos no tienen un buen ajuste con la muestra. Generalmente, se espera que el R² se acerque al 40%-80% para considerar los modelos más explicativo, pero en este caso ambos valores son menores (0.192) y (0.005), lo que sugiere que las variables elegidas no explican del todo las diferencias salariales.
+El R² de ambos modelos es relativamente bajo, lo cual indica que estos modelos no tienen un buen ajuste con la muestra. Generalmente, se espera que el R² se acerque al 40% - 80% para considerar los modelos más explicativo, pero en este caso ambos valores son menores (0.192) y (0.005), lo que sugiere que las variables elegidas no explican del todo las diferencias salariales.
 
 El estadístico F en ambos modelos es significativo, lo que indica que al menos una de las variables es relevante para predecir el salario por hora. Sin embargo, el modelo condicional tiene un ajuste superior, ya que controla por variables clave que influyen en los salarios, lo que lo convierte en un modelo más robusto y confiable en comparación con el modelo incondicional.
 
 De los resultados de las regresiones se puede observar que el teorema FWL se cumple porque los coeficientes de los betas son iguales.
 
 ```{r}
-#Se comparan los coeficientes de female
+# Se comparan los coeficientes de female
 
 beta_female_controles <- coef(reg_female_controles)["female"]
 beta_femal_residuos <- coef(reg_residuos_female)["residuos_female"]
 
-beta_female_controles 
-beta_femal_residuos
+# Resumen de resultados
+coef_female <- data.frame(Beta_female = c(beta_female_controles, 
+                                          beta_femal_residuos))
+
+t_betas_female4 <- stargazer(coef_female, type = "text", 
+                             summary = FALSE, 
+                             title = "TABLA 4-COMPARACIÓN BETAS FEMALE")
+
+# Guardar tabla
+writeLines(t_betas_female4, "TABLA 4-COMPARACIÓN BETAS FEMALE.txt")
 ```
 
 Posteriomente, se estima el modelo FWL con Boostrap
