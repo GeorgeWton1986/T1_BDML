@@ -443,7 +443,8 @@ Bondad de ajuste: El R² es 0.0194 y R² ajustado da el valor de 0.01932 , esto 
 
 # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
 
-Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”. En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
+Luego de estimar, predecir y analizar las ecuaciones y gráficas podemos sugerir que el comportamiento del salario en funcion de la edad en la población encuestada sugiere que los salarios son bajos a la edad de 18 años. Además, se noto que el salario mejora con el aumento de los años. No obstante, el ritmo de crecimiento del salario es más grande en comparación con edades medias, como por ejemplo, los 36 años, donde se registro un cambio de 0,69%. De otro lado, se registro la edad pico para este estudio en 42.25 años de edad, este punto es importante por dos razones. La primera, es el punto de inflexión entre el cambio positivo y el cambio negativo  en el ingreso. la segunda, que en promedio se referencia la edad pico a los 50 años, esto puede sugerir que podemos tener otras variables que no fueron incluidas en el estudio/ecuación que generen una disminución de la edad y obtener mejores salarios. 
+
 
 ```{r}
 # Función que obtiene los coefficientes de modelo
@@ -474,7 +475,7 @@ set.seed(123)
 
 #LLamado de la función boot
 
-peak_age_boot <- boot(df_salario, peak_age_fn,R=16542)
+peak_age_boot <- boot(df_salario, peak_age_fn,R=1000)
 peak_age_boot
 
 #Crear un data frame que almacene los resultado de peak_age_boot
@@ -487,7 +488,8 @@ quan_peak_age_boot <- quantile(peak_age_boot_df$peak_age, probs = c(0.025,0.975)
 quan_peak_age_boot
 
 #Graficar el histograma
-p <- ggplot(df_hist, aes(x = peak_age)) +
+
+p <- ggplot(peak_age_boot_df, aes(x = peak_age)) +
   geom_histogram(fill = "gray70", color = "black", bins = 30) +  
   geom_vline(xintercept = quan_peak_age_boot, col = "black", linetype = "dashed", linewidth = 1) +  
   labs(title = "GRÁFICO 4-DISTRIBUCIÓN DE MUESTRA", 
@@ -500,11 +502,15 @@ p <- ggplot(df_hist, aes(x = peak_age)) +
     axis.title.y = element_text(size = 10)
   )
 
+p
 # Guardar con alta resolución (AER recomienda 300 DPI)
 ggsave("histogramadistribucionmuestra4.png", plot = p, dpi = 300, width = 8, height = 6)
 
 
 ```
+
+
+En conclusion, es de notar que esta variable no es la unica que determina el valor, podriamos incluir, por ejemplo, la industria, la experiencia de laboral, la cantidad de años de estudio, ranking institucion educativa, etc. y otras que habilidades sociales que pueden ser dificiles de cuantificar en cuyo casos podria ayudar a explicar el comportamiento del salario en funcion de la edad. 
 
 ## 4.La brecha salarial de género.
 
