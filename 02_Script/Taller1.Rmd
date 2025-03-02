@@ -357,24 +357,23 @@ ggsave("perfilingresosedad3.png", dpi = 300)
 Con el analisis anterior, podemos observar el comportamiento de la ecuación estimada es parabolico, es decir, en la "edad pico" se encuentra el punto de inflexión. Todas las edades menores a la "edad pico", la variable $$log(\hat{w})$$ será cerciente y para edades mayores a la "edad pico" la varible $$log(\hat{w})$$ seran decreciente. Asi las cosas, es necesario conocer como se calcula el punto de inflexión.
 
 $$
-\Delta log(\hat{w})/\Delta Age=0
+\frac{\Delta \log(\hat{w})}{\Delta \text{Age}} = 0  \quad (4)
 $$
 
 $$
-\Delta log(\hat{w})/\Delta Age=\hat{β_1}+2\hat{β_2}Age
+\frac{\Delta \log(\hat{w})}{\Delta \text{Age}} = \hat{\beta}_1 + 2\hat{\beta}_2 \cdot \text{Age}  \quad (5)
 $$
 
 $$
-0=\hat{β_1}+2\hat{β_2}Age
+0=\hat{β_1}+2\hat{β_2}Age    \quad (6)
 $$
 
 $$
-Age_{pico}=-\hat{β_1}/2\hat{β_2}
+\text{Age}_{\text{pico}} = -\frac{\hat{\beta}_1}{2\hat{\beta}_2} \quad (7)
 $$
 
 ```{r}
 # Obtener los coeficientes de la regresion log(w) = β0 + β1Age + β2Age2 + u
-
 coefs <- modelo_age_wage$coef
 coefs
 
@@ -447,16 +446,21 @@ quan_peak_age_boot <- quantile(peak_age_boot_df$peak_age, probs = c(0.025,0.975)
 quan_peak_age_boot
 
 #Graficar el histograma
-hist(peak_age_boot_df$peak_age, las=1,
-     main = "Distribución de muestra",
-     xlim = c(41,44),
-     xlab = "Edad",
-     ylim = c(0,3000),
-     ylab = "Frecuencia",
-     col = "blue")
+p <- ggplot(df_hist, aes(x = peak_age)) +
+  geom_histogram(fill = "gray70", color = "black", bins = 30) +  
+  geom_vline(xintercept = quan_peak_age_boot, col = "black", linetype = "dashed", linewidth = 1) +  
+  labs(title = "GRÁFICO 4-DISTRIBUCIÓN DE MUESTRA", 
+       x = "Edad", 
+       y = "Frecuencia") +
+  theme_classic() +  # Fondo blanco, sin cuadrícula
+  theme(
+    plot.title = element_text(size = 12, hjust = 0.5),  
+    axis.title.x = element_text(size = 10),  
+    axis.title.y = element_text(size = 10)
+  )
 
-abline(v=quan_peak_age_boot, col = "green", lwd =2, lty=2)
-legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
+# Guardar con alta resolución (AER recomienda 300 DPI)
+ggsave("histogramadistribucionmuestra4.png", plot = p, dpi = 300, width = 8, height = 6)
 
 
 ```
@@ -466,8 +470,9 @@ legend("topright", legend = "Cuantiles", col = "green", lwd = 2, lty = 2)
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
 
 $$
-log(w) = β1 + β2Female + u
-$$ donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
+log(w) = β1 + β2Female + u \quad (8)
+$$ 
+donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
 
 ```{r}
 #Se crea la variable female en nuestra base
@@ -478,7 +483,13 @@ df_salario <- df_salario %>%
 #Estimación de regresion log (salario) con female
 reg_female <- lm(formula = log(salario_hora) ~ female, data =df_salario)
 
-stargazer(reg_female, type = "text")
+stargazer(reg_female, 
+          type = "text",            
+          title = "TABLA 3-MODELO DE SALARIO SEGÚN GÉNERO", 
+          dep.var.labels = "Log(Salario por Hora)",  
+          digits = 3,                
+          align = TRUE,           
+          star.cutoffs = c(0.1, 0.05, 0.01))
 
 ```
 
@@ -514,8 +525,16 @@ residuos_female <- residuals(reg_female_residuos)
 reg_residuos_female <- lm(log(salario_hora) ~ residuos_female, data = df_salario)
 
 
-stargazer(reg_female_controles , reg_residuos_female, type = "text",
-          column.labels = c("Modelo Condicional", "Modelo Incondicional"))
+stargazer(reg_female_controles, reg_residuos_female, 
+          type = "text", 
+          title = "TABLA 4-ESTIMACIÓN DE GÉNERO EN SALARIO",
+          column.labels = c("Modelo Condicional", "Modelo Incondicional"), 
+          covariate.labels = c("Mujer", "Nivel Educativo", "Tiempo en Empresa", "Edad", "Residuos de Mujer"),
+          dep.var.labels = "Log(Salario por Hora)",  
+          digits = 3,                
+          align = TRUE,           
+          star.cutoffs = c(0.1, 0.05, 0.01),
+          notes = c("Significancia: * p<0.1, ** p<0.05, *** p<0.01"))
 ```
 
 Análisis del modelo condicional e incondicional:
@@ -575,15 +594,22 @@ Ahora, se graficará el perfil de edad- salario previsto y se calculará las eda
 ggplot(df_salario) + 
   geom_point(
     aes(x = age, y = log(salario_hora)),
-    color = "darkred", size = 2
+    color = "gray30", size = 1.5, alpha = 0.6
   ) + 
   labs(
-    title = "Relación de edad y Salario por Horas",
+    title = "GRÁFICO 4-RELACIÓN ENTRE EDAD Y SALARIO POR HORA",
     x = "Edad",
-    y = "Ln Salario por horas"
+    y = "Log(Salario por Hora)"
   ) +
-  theme_bw()
+  theme_classic() + 
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(size = 10),  
+    axis.text = element_text(size = 10)  
+  )
 
+# Guardar
+ggsave("edadsalario4.png", dpi = 300)
 ```
 
 Discusión de edades pico a partir del gráfico (...)
@@ -626,16 +652,19 @@ split_data <- data.frame(
 )
 
 # Crear el gráfico
-ggplot(split_data, aes(x = Split, y = Count, fill = factor(Split))) + 
-  geom_bar(stat = "identity", width = 0.5) + 
+ggplot(split_data, aes(x = Split, y = Count, fill = Split)) + 
+  geom_bar(stat = "identity", width = 0.5, color = "black") + 
   geom_text(aes(label = paste0(round(Percentage, 1), "%\n(n=", Count, ")")),
-            vjust = -0.5, color = "black", size = 4) + 
-  labs(title = "Distribución de la división de la muestra de entrenamiento y prueba",
+            vjust = 1.5, color = "black", size = 5) + 
+  labs(title = "GRÁFICO 6-DISTRIBUCIÓN DE LA DIVISIÓN DE LA MUESTRA",
        y = "Número de observaciones",
        x = "") + 
-  theme_bw() + 
-  ylim(0, max(split_data$Count) * 1.2) + 
-  scale_fill_manual(values = c("lightblue", "lightsalmon"))  
+  theme_classic() + 
+  scale_fill_manual(values = c("gray70", "gray85")) + 
+  theme(plot.title = element_text(hjust = 0.5, size = 12))  # Centrar el título
+
+# Guardar 
+ggsave("divisionmuestra6.png", dpi = 300)
 ```
 
 ### 5.2 Comparación del rendimiento predictivo en términos de RMSE
@@ -644,35 +673,35 @@ Para realizar una comparación significativa de los rendimientos predictivos de 
 
 #### Modelo 1: Regresión con Female y controles
 
-$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa  +  β4age + u$$
+$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa  +  β4age + u \quad (9)$$ 
 
 #### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
 
-$$log(female) = β0 + β1educ + β2tiempoempresa  + β3age + u$$
+$$log(female) = β0 + β1educ + β2tiempoempresa  + β3age + u \quad (10)$$
 
 #### Modelo 3: Regresión con residuos de Female
 
-$$log(w) = β0 + β1residuosfemale + u$$
+$$log(w) = β0 + β1residuosfemale + u \quad (11)$$
 
 #### Modelo 4: Modelo sin controles (solo female)
 
-$$log(w) = β0 + β1Female + β2tamañoempresa  + u$$
+$$log(w) = β0 + β1Female + β2tamañoempresa  + u \quad (12)$$
 
 #### Modelo 5: Modelo con interacciones (female x age)
 
-$$log(w) = β0 + β1Female + β2age + β3female*tiempoempresa + β4tiempoempresa + u$$
+$$log(w) = β0 + β1Female + β2age + β3female*tiempoempresa + β4tiempoempresa + u \quad (13)$$
 
 #### Modelo 6: Modelo no lineal con tamaño empresa²
 
-$$log(w) = β0 + β1Female + β2tamaño_empresa + β3(tamañoempresa^2) + u$$
+$$log(w) = β0 + β1Female + β2tamaño_empresa + β3(tamañoempresa^2) + u \quad (14)$$
 
 #### Modelo 7: Modelo con variables adicional e interaciones
 
-$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa + β4age + β5formal + β6segusocial + β7female*segusocial + β8(age^2) + u$$
+$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa + β4age + β5formal + β6segusocial + β7female*segusocial + β8(age^2) + u \quad (15)$$
 
 #### Modelo 8:
 
-$$log(w) = β0 + β1Female + β2educ + β3female*educ + β4age + β5(age^2) + u$$
+$$log(w) = β0 + β1Female + β2educ + β3female*educ + β4age + β5(age^2) + u \quad (16)$$
 
 ```{r}
 # Definición de modelos
@@ -743,8 +772,8 @@ mse_table <- data.frame(
   MSE = c(salario_1, salario_2, salario_3, salario_4, salario_5, salario_6, salario_7, salario_8)
 )
 
-# Imprimir la tabla
-print(mse_table)
+# Imprimir la tabla para comparar los RMSE
+stargazer(mse_table, type = "text", summary = FALSE, title = "TABLA 5-COMPARACIÓN DE RMSE ENTRE MODELOS")
 ```
 
 ###5.c.i.ii. Discusión de los resultados de RMSE con Validation Set Approach
@@ -765,8 +794,12 @@ En términos generales, los modelos que incluyen mayores niveles de complejidad 
 errores <- test_sample$salario_hora - exp(predict(m7, test_sample))
 
 #Distribución de los errores
-hist(errores, main = "Distribución de Errores de Predicción", 
-     xlab = "Error de Predicción", col = "lightblue", border = "black")
+hist(errores, 
+     main = "GRÁFICO 6-DISTRIBUCIÓN DE ERRORES DE PREDICCIÓN", 
+     xlab = "Error de Predicción", 
+     col = "gray70", 
+     border = "white", 
+     font.main = 1)  
 
 #Identificar outliers en percentiles 2.5% y 97.5%
 percentiles <- quantile(errores, probs = c(0.025, 0.975))
@@ -775,9 +808,25 @@ outliers <- test_sample[errores < percentiles[1] | errores > percentiles[2], ]
 print(head(outliers))
 
 #Datos más extremos y box plot outliers
-boxplot(errores, main = "Boxplot de Errores de Predicción", col = "lightblue")
-abline(h = percentiles, col = "red", lty = 2) # 
+par(font.main = 1)  #quitar nequilla
 
+# Gráfico de boxplot con formato AER
+boxplot(errores, 
+        main = "GRÁFICO 7 - BOXPLOT DE ERRORES DE PREDICCIÓN", 
+        xlab = "Errores de Predicción",  
+        ylab = "Valor del Error",        
+        col = "gray70",      
+        border = "black",    
+        outpch = 16,         
+        outcol = "blue",     
+        whiskcol = "black",  
+        staplecol = "black",
+        cex.main = 1.1,  
+        cex.lab = 1.1,   
+        cex.axis = 1.1)  
+
+# Agregar líneas de percentiles (outliers)
+abline(h = percentiles, col = "black", lty = 2)
 
 ```
 El histograma de errores de predicción muestra una distribución sesgada a la derecha, lo que indica que la mayoría de los errores son pequeños, pero existen algunas observaciones con diferencias extremadamente grandes entre el salario real y el predicho. El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 44444, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
