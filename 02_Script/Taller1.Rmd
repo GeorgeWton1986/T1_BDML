@@ -517,7 +517,7 @@ En conclusion, es de notar que esta variable no es la unica que determina el val
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
 
 $$
-log(w) = β1 + β2Female + u \quad (8)
+log(w) = β_1 + β_2Female + u \quad (8)
 $$ 
 donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
 
@@ -720,35 +720,35 @@ Para realizar una comparación significativa de los rendimientos predictivos de 
 
 #### Modelo 1: Regresión con Female y controles
 
-$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa  +  β4age + u \quad (9)$$ 
+$$log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa  +  β_4age + u \quad (9)$$ 
 
 #### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
 
-$$log(female) = β0 + β1educ + β2tiempoempresa  + β3age + u \quad (10)$$
+$$log(female) = β_0 + β_1educ + β_2tiempoempresa  + β_3age + u \quad (10)$$
 
 #### Modelo 3: Regresión con residuos de Female
 
-$$log(w) = β0 + β1residuosfemale + u \quad (11)$$
+$$log(w) = β_0 + β_1residuosfemale + u \quad (11)$$
 
 #### Modelo 4: Modelo sin controles (solo female)
 
-$$log(w) = β0 + β1Female + β2tamañoempresa  + u \quad (12)$$
+$$log(w) = β_0 + β_1Female + β_2tamañoempresa  + u \quad (12)$$
 
 #### Modelo 5: Modelo con interacciones (female x age)
 
-$$log(w) = β0 + β1Female + β2age + β3female*tiempoempresa + β4tiempoempresa + u \quad (13)$$
+$$log(w) = β_0 + β_1Female + β_2age + β_3female*tiempoempresa + β_4tiempoempresa + u \quad (13)$$
 
 #### Modelo 6: Modelo no lineal con tamaño empresa²
 
-$$log(w) = β0 + β1Female + β2tamaño_empresa + β3(tamañoempresa^2) + u \quad (14)$$
+$$log(w) = β_0 + β_1Female + β_2tamañoempresa + β_3tamañoempresa^2 + u \quad (14)$$
 
 #### Modelo 7: Modelo con variables adicional e interaciones
 
-$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa + β4age + β5formal + β6segusocial + β7female*segusocial + β8(age^2) + u \quad (15)$$
+$$log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa + β_4age + β_5formal + β_6segusocial + β_7female*segusocial + β_8age^2 + u \quad (15)$$
 
 #### Modelo 8:
 
-$$log(w) = β0 + β1Female + β2educ + β3female*educ + β4age + β5(age^2) + u \quad (16)$$
+$$log(w) = β_0 + β_1Female + β_2educ + β_3female*educ + β_4age + β_5age^2 + u \quad (16)$$
 
 ```{r}
 # Definición de modelos
@@ -785,7 +785,7 @@ m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + a
 test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
 ```
 
-Luego de definir los modelos, se procede con las respectivas predicciones, además de comparar los resultados del RMSE para identificar el modelo con el mejor rendimiento predictivo.
+Luego de definir los modelos, se procedra con las predicciones, comparacion los resultados del RMSE e identificacion del modelo con el mejor rendimiento predictivo.
 
 ```{r}
 # Generar predicciones y RMSE
