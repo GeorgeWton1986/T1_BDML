@@ -682,28 +682,44 @@ set.seed(123)
 
 # Estimaciones y errores estandar
 errorestandar_boot <-  boot(df_salario, fwl_boot, R = 1000)
-errorestandar_boot
 
+# Data frame para crear tabla
+result_boot_errores <- data.frame(Estadístico = c("Estimación Original",
+                                                  "Sesgo", "Error Estándar"
+                                                  ), 
+                                  Valor = c(errorestandar_boot$t0, 
+                                            mean(errorestandar_boot$t) -
+                                              errorestandar_boot$t0, 
+                                            sd(errorestandar_boot$t)))
+# Creación de tabla
+t_errorstd_boot5 <- stargazer(result_boot_errores, type = "text", 
+                             summary = FALSE, 
+                             title = "TABLA 5-BOOTSTRAP ORDINARIO NO PARAMÉTRICO")
+
+# Guardar tabla
+writeLines(t_errorstd_boot5, 
+           "TABLA 5-BOOTSTRAP ORDINARIO NO PARAMÉTRICO.txt")
 ```
 
-Análisis de comparación de las estimaciones y los errores estándar
+#### Análisis de comparación de las estimaciones y los errores estándar
 
-Al comparar las estimaciones de los coeficientes para female en los dos modelos (uno con controles y otro con los residuos de female), se observa que las estimaciones son prácticamente iguales cuando se utiliza el bootstrap. Sin embargo, los errores estándar son ligeramente diferentes entre los métodos con FWL y FWL con Boostrap. En el modelo estimado mediante el método FWL, el error estándar para female es de 0.011, mientras que en el modelo ajustado por los residuos de female, el error estándar aumenta ligeramente a 0.012. Aunque ambos valores son bastante similares, el modelo con los residuos refleja un pequeño aumento en la variabilidad de la estimación.
+Al comparar las estimaciones de los coeficientes para female en los dos modelos (uno con controles y otro con los residuos de female), se observa que las estimaciones son iguales cuando se utiliza el Bootstrap.
 
-El valor del error estándar de la estimación de female mediante el método FWL con bootstrap es 0.01096617, lo que es consistente con los resultados obtenidos en el modelo con controles. Además, se observa que la variabilidad en la estimación de female es más baja en el modelo con bootstrap, en comparación con el modelo FWL ajustado por los residuos, lo que sugiere una mayor precisión en las estimaciones obtenidas mediante el bootstrap.
+El valor del error estándar de la estimación de female mediante el método FWL con bootstrap es 0.011, lo que es consistente con los resultados obtenidos en el modelo con controles. Además, se observa que la variabilidad en la estimación de female es más baja en el modelo con bootstrap, en comparación con el modelo FWL ajustado por los residuos, lo que sugiere una mayor precisión en las estimaciones obtenidas mediante el bootstrap.
 
-A pesar de estos pequeños cambios en los errores estándar, la brecha salarial de género sigue siendo evidente. El coeficiente negativo para female en ambos modelos indica que las mujeres ganan, en promedio, menos que los hombres, lo que confirma la persistencia de la brecha salarial.
+Se puede concluir que la brecha salarial de género sigue siendo evidente. El coeficiente negativo para female en ambos modelos indica que las mujeres ganan, en promedio, menos que los hombres, lo que confirma la persistencia de la brecha salarial.
 
-Ahora, se graficará el perfil de edad- salario previsto y se calculará las edades pico implícitas con los respectivos intervalos de confianza por género
+Ahora, se graficará el perfil de *edad- salario* previsto y se calculará las edades pico implícitas con los respectivos intervalos de confianza por género.
 
 ```{r}
+# Creación de la gráfica
 ggplot(df_salario) + 
   geom_point(
     aes(x = age, y = log(salario_hora)),
     color = "gray30", size = 1.5, alpha = 0.6
   ) + 
   labs(
-    title = "GRÁFICO 4-RELACIÓN ENTRE EDAD Y SALARIO POR HORA",
+    title = "GRÁFICO 5-RELACIÓN ENTRE EDAD Y SALARIO POR HORA",
     x = "Edad",
     y = "Log(Salario por Hora)"
   ) +
@@ -715,7 +731,7 @@ ggplot(df_salario) +
   )
 
 # Guardar
-ggsave("edadsalario4.png", dpi = 300)
+ggsave("edadsalario5.png", dpi = 300)
 ```
 
 Discusión de edades pico a partir del gráfico (...)
@@ -730,7 +746,7 @@ La selección no solo puede depender de características observables tales como 
 
 En las secciones anteriores, se estimó algunas especificaciones teniendo en cuenta la inferencia. En esta sección, evaluaremos el poder predictivo de estas especificaciones.
 
-### 5.1. División de la muestra
+### División de la muestra
 
 ```{r}
 # Semilla para consistencia de resultados
@@ -773,43 +789,43 @@ ggplot(split_data, aes(x = Split, y = Count, fill = Split)) +
 ggsave("divisionmuestra6.png", dpi = 300)
 ```
 
-### 5.2 Comparación del rendimiento predictivo en términos de RMSE
+### Comparación del rendimiento predictivo en términos de RMSE
 
-Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proporcionaron cinco modelos adicionales que permiten identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estiamdos previamente. Asi las cosas, estudiaran un total 8 especificaciones:
+Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proporcionaron cinco modelos adicionales que permiten identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estimados previamente. De este modo, se estudiaran un total 8 especificaciones:
 
-#### Modelo 1: Regresión con Female y controles
+**Modelo 1: Regresión con Female y controles**
 
 $$
 log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa  +  β_4age + u \quad (9)
 $$
 
-#### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
+**Modelo 2: Regresión auxiliar (FWL - residuos de Female)**
 
 $$
 log(female) = β_0 + β_1educ + β_2tiempoempresa  + β_3age + u \quad (10)
 $$
 
-#### Modelo 3: Regresión con residuos de Female
+**Modelo 3: Regresión con residuos de Female**
 
 $$log(w) = β_0 + β_1residuosfemale + u \quad (11)$$
 
-#### Modelo 4: Modelo sin controles (solo female)
+**Modelo 4: Modelo sin controles (solo female)**
 
 $$log(w) = β_0 + β_1Female + β_2tamañoempresa  + u \quad (12)$$
 
-#### Modelo 5: Modelo con interacciones (female x age)
+**Modelo 5: Modelo con interacciones (female x age)**
 
 $$log(w) = β_0 + β_1Female + β_2age + β_3female*tiempoempresa + β_4tiempoempresa + u \quad (13)$$
 
-#### Modelo 6: Modelo no lineal con tamaño empresa²
+**Modelo 6: Modelo no lineal con tamaño empresa²**
 
 $$log(w) = β_0 + β_1Female + β_2tamañoempresa + β_3tamañoempresa^2 + u \quad (14)$$
 
-#### Modelo 7: Modelo con variables adicional e interaciones
+**Modelo 7: Modelo no lineal con variables adicional e interacciones**
 
 $$log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa + β_4age + β_5formal + β_6segusocial + β_7female*segusocial + β_8age^2 + u \quad (15)$$
 
-#### Modelo 8:
+**Modelo 8: Modelo no lineal con variables adcionales**
 
 $$log(w) = β_0 + β_1Female + β_2educ + β_3female*educ + β_4age + β_5age^2 + u \quad (16)$$
 
@@ -842,13 +858,13 @@ m6 <- lm(log(salario_hora) ~ female + tamaño_empresa + I(tamaño_empresa^2), da
 m7 <- lm(log(salario_hora) ~ female + max_nivel_educ + tiempo_empresa + age + formal + segu_social + female:segu_social + I(age^2), 
                           data = train_sample)
 
-# Modelo 8: 
+# Modelo 8: Modelo no lineal con variables adcionales
 m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + age + I(age^2), data = train_sample)
 
 test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
 ```
 
-Luego de definir los modelos, se procedera con las predicciones, comparacion los resultados del RMSE e identificacion del modelo con el mejor rendimiento predictivo.
+Luego de definir los modelos, se procede a realizar las predicciones, comparacion de los resultados del RMSE e identificacion del modelo con el mejor rendimiento predictivo.
 
 ```{r}
 # Generar predicciones y RMSE
@@ -877,26 +893,30 @@ pred_8<- predict(m8, test_sample)
 salario_8 <- RMSE(exp(pred_8), test_sample$salario_hora)
 
 # Crear la tabla con los MSE
-mse_table <- data.frame(
+mse_table6 <- data.frame(
   Modelo = c("m1", "m2", "m3", "m4", "m5", "m6", "m7", "m8"),
   MSE = c(salario_1, salario_2, salario_3, salario_4, salario_5, salario_6, salario_7, salario_8)
 )
 
-# Imprimir la tabla para comparar los RMSE
-stargazer(mse_table, type = "text", summary = FALSE, title = "TABLA 5-COMPARACIÓN DE RMSE ENTRE MODELOS")
+# Formato tabla
+stargazer(mse_table6, type = "text", summary = FALSE, title = "TABLA 6-COMPARACIÓN DE RMSE ENTRE MODELOS")
+
+# Guardar tabla
+writeLines(t_errorstd_boot5, 
+           "TABLA 5-BOOTSTRAP ORDINARIO NO PARAMÉTRICO.txt")
 ```
 
-###5.c.i.ii. Discusión de los resultados de RMSE con Validation Set Approach
+### Discusión de los resultados de RMSE con Validation Set Approach
 
 Se evaluaron ocho especificaciones diferentes usando Validation Set Approach para medir el rendimiento predictivo de los modelos con la métrica RMSE, la cual indica un mejor desempeño predictivo entre más bajo sea su nivel. El resultado hace evidente que el Modelo 7 tiene el menor valor de RMSE, con un valor de 13,448.67, por lo tanto, es el mejor en términos de RMSE. Esto sugiere que incluir controles adicionales como si la persona cuenta con seguridad social, si está en un trabajo formal, entre otros, aporta información relevante para predecir el cambio en los salarios.
 
-El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 13,448.67. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable formal, segu_social, la interacción female:segu_social y un término cuadrático $age^2$. El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (13,604.31). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de female, max_nivel_educ, tiempo_empresa y age.
+El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 13,448.67. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable *formal*, *segu_social*, la interacción *female:segu_socia*l y un término cuadrático $age^2$. El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (13,604.31). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de *female*, *max_nivel_educ*, *tiempo_empresa* y *age*.
 
-Los modelos con no linealidades e interacciones presentan mejoras en algunos casos, como el Modelo 8, que incorpora la interacción female:max_nivel_educ y logra un RMSE similar al Modelo 1 (13,644.11). El Modelo 2 es el peor en términos predictivos (RMSE = 16,113.97). Esto es esperado, ya que este modelo solo estima los residuos de female, sin utilizar directamente la variable dependiente log(salario_hora).
+Los modelos con no linealidades e interacciones presentan mejoras en algunos casos, como el Modelo 8, que incorpora la interacción *female:max_nivel_educ* y logra un RMSE similar al Modelo 1 (13,644.11). El Modelo 2 presenta el desempeño más bajo en términos predictivos (RMSE = 16,113.97). Esto es esperado, ya que este modelo solo estima los residuos de *female*, sin utilizar directamente la variable dependiente *log(salario_hora)*.
 
-En términos generales, los modelos que incluyen mayores niveles de complejidad tienden a mejorar el desempeño predictivo, pero no todos los ajustes mejoran la precisión. La inclusión de interacciones y términos no lineales es útil solo si está bien justificada teóricamente.
+En términos generales, los modelos que incluyen mayores niveles de complejidad tienden a mejorar el desempeño predictivo, pero no todos los ajustes mejoran la precisión. La inclusión de interacciones y términos no lineales es útil solo si se justifica teóricamente.
 
-###5.c.iii. Especificación del modelo con error de predicción: Modelo 7
+### Especificación del modelo con error de predicción: Modelo 7
 
 ```{r}
 #Calculo errores de predicción
@@ -904,12 +924,18 @@ errores <- test_sample$salario_hora - exp(predict(m7, test_sample))
 
 #Distribución de los errores
 hist(errores, 
-     main = "GRÁFICO 6-DISTRIBUCIÓN DE ERRORES DE PREDICCIÓN", 
+     main = "GRÁFICO 7-DISTRIBUCIÓN DE ERRORES DE PREDICCIÓN", 
      xlab = "Error de Predicción", 
      col = "gray70", 
      border = "white", 
-     font.main = 1)  
+     font.main = 1)
+# Guardar 
+ggsave("divisionerrorespredict7.png", dpi = 300)
+```
 
+El histograma de errores de predicción muestra una distribución sesgada a la derecha, lo que indica que la mayoría de los errores son pequeños, pero existen algunas observaciones con diferencias extremadamente grandes entre el salario real y el predicho.
+
+```{r}
 #Identificar outliers en percentiles 2.5% y 97.5%
 percentiles <- quantile(errores, probs = c(0.025, 0.975))
 outliers <- test_sample[errores < percentiles[1] | errores > percentiles[2], ]
@@ -921,7 +947,7 @@ par(font.main = 1)  #quitar nequilla
 
 # Gráfico de boxplot con formato AER
 boxplot(errores, 
-        main = "GRÁFICO 7 - BOXPLOT DE ERRORES DE PREDICCIÓN", 
+        main = "GRÁFICO 8 - BOXPLOT DE ERRORES DE PREDICCIÓN", 
         xlab = "Errores de Predicción",  
         ylab = "Valor del Error",        
         col = "gray70",      
@@ -937,19 +963,21 @@ boxplot(errores,
 # Agregar líneas de percentiles (outliers)
 abline(h = percentiles, col = "black", lty = 2)
 
+# Guardar 
+ggsave("boxploterrorespredict8.png", dpi = 300)
 ```
 
-El histograma de errores de predicción muestra una distribución sesgada a la derecha, lo que indica que la mayoría de los errores son pequeños, pero existen algunas observaciones con diferencias extremadamente grandes entre el salario real y el predicho. El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 44444, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
+El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 44444, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
 
-Desde el punto de vista de la DIAN, estos valores atípicos pueden indicar posibles irregularidades. Los individuos con ingresos extremadamente altos podrían estar no declarando información, lo que podría justificar una revisión adicional. También es posible que algunos outliers sean simplemente el resultado de errores en los datos, por lo que sería necesario verificar la calidad de la información. Otra posibilidad es que el modelo no haya capturado algunas características clave del mercado laboral, lo que explicaría por qué ciertas observaciones presentan errores tan grandes.
+Desde el punto de vista de la DIAN, estos valores atípicos pueden indicar posibles irregularidades. Los individuos con ingresos extremadamente altos podrían estar no declarando información, lo que podría justificar una revisión adicional. Otra posibilidad es que el modelo no haya capturado algunas características clave del mercado laboral, lo que explicaría por qué ciertas observaciones presentan errores tan grandes.
 
 En conclusión, la DIAN podría enfocarse en analizar más a fondo los outliers para determinar si reflejan ingresos no declarados, errores en los datos o simplemente limitaciones del modelo. Para mejorar la precisión de las predicciones, sería recomendable incluir nuevas variables que expliquen mejor los salarios atípicamente altos o bajos. También sería útil realizar un análisis más detallado sobre la naturaleza de estos empleos y sus características tributarias, para evaluar si requieren una revisión adicional.
 
-###5.d. Calculo de error predictivo con LOOCV
+### Cálculo de error predictivo con LOOCV
 
 Los dos modelos con menor RMSE en el paso anterior fueron el modelo 1 y el modelo 7, a continuación, se realizará el análisis correspondiente.
 
-Modelo 1 con LOOCV
+#### Modelo 1 con LOOCV
 
 ```{r}
 ctrl <- trainControl(method = "LOOCV")
@@ -967,7 +995,7 @@ rmse_m1_loocv_real <- RMSE(exp(m1_loocv$pred$pred), exp(m1_loocv$pred$obs))
 cat("Modelo 1 - LOOCV RMSE (Original):", round(rmse_m1_loocv_real, 2), "\n")
 ```
 
-Modelo 7 con LOOCV
+#### Modelo 7 con LOOCV
 
 ```{r}
 ctrl <- trainControl(method = "LOOCV")
@@ -986,7 +1014,7 @@ cat("Modelo 7 - LOOCV RMSE (Original):", round(rmse_m7_loocv_real, 2), "\n")
 
 ```
 
-Modelo 1 con Leverage LOOCV
+#### Modelo 1 con Leverage LOOCV
 
 ```{r}
 # Modelo 1 con LOOCV y leverage
@@ -1011,7 +1039,7 @@ print(rmse_m1_loocv_laverage_real)
 
 ```
 
-Modelo 7 con Leverage LOOCV
+#### Modelo 7 con Leverage LOOCV
 
 ```{r}
 # Modelo 7 con LOOCV y leverage
@@ -1036,7 +1064,7 @@ print(rmse_m7_loocv_laverage_real)
 
 ```
 
-Tabla comparativa RMSE con diferentes metolodologías
+A continuación, se puede visualizar una tabla comparativa de RMSE con las diferentes metolodologías aplicadas.
 
 ```{r}
 # Tabla de comparación
@@ -1050,20 +1078,27 @@ comparacion_rmse <- data.frame(
   RMSE_Leverage = c(rmse_m1_loocv_laverage_real, rmse_m7_loocv_laverage_real)
 )
 
-print(comparacion_rmse)
+# Formato para tabla
+t_rmse7 <- stargazer(comparacion_rmse, type = "text",
+                   summary = FALSE,
+                   title = "TABLA 7-COMPARACIÓN DE RMSE ENTRE MODELO 1 Y MODELO 7")
+
+# Guardar tabla
+writeLines(t_rmse7, 
+           "TABLA 7-COMPARACIÓN DE RMSE ENTRE MODELO 1 Y MODELO 7.txt")
 ```
 
-Comparación del error predictivo entre Validation Set Approach y LOOCV
+### Comparación del error predictivo entre Validation Set Approach y LOOCV
 
 Se compararon los errores predictivos de los modelos M1 y M7 utilizando dos métodos de validación: el Validation Set Approach (VSA) y el Leave-One-Out Cross-Validation (LOOCV). Los resultados muestran que el RMSE obtenido con LOOCV es menor que el obtenido con el VSA para ambos modelos, lo que sugiere que la evaluación con LOOCV es más estable y menos dependiente de cómo se divida la muestra. En particular, el RMSE de M7 sigue siendo menor que el de M1 en ambos métodos, lo que refuerza la conclusión de que M7 tiene mejor desempeño predictivo.
 
-Relación con la estadística de influencia (Leverage)
+### Relación con la estadística de influencia (Leverage)
 
-Los valores de RMSE calculados con LOOCV utilizando leverage muestran que las diferencias con el LOOCV tradicional son mínimas (por ejemplo, para M7, pasa de 12723.80 a 12721.74). Esto sugiere que las observaciones con alto leverage no están afectando significativamente la estabilidad del modelo en términos de error predictivo. En términos prácticos, esto implica que aunque algunas observaciones pueden tener un alto leverage, su impacto sobre la predicción global del modelo no es significativo. Si hubiera diferencias marcadas entre LOOCV normal y LOOCV con leverage, eso indicaría que ciertos puntos influyentes distorsionan la estimación de los coeficientes y, por ende, del error predictivo.
+Los valores de RMSE calculados con LOOCV utilizando leverage muestran que las diferencias con el LOOCV tradicional son mínimas (por ejemplo, para M7, pasa de 12723.80 a 12721.74). Esto sugiere que las observaciones con alto Leverage no están afectando significativamente la estabilidad del modelo en términos de error predictivo. En términos prácticos, esto implica que aunque algunas observaciones pueden tener un alto Leverage, su impacto sobre la predicción global del modelo no es significativo. Si hubiera diferencias marcadas entre LOOCV normal y LOOCV con leverage, eso indicaría que ciertos puntos influyentes distorsionan la estimación de los coeficientes y, por ende, del error predictivo.
 
-Conclusión
+### Conclusión
 
-El modelo M7 sigue siendo el mejor en términos de error predictivo, independientemente del método de validación utilizado. Además, la inclusión de leverage en los cálculos de LOOCV confirma que no hay observaciones individuales que estén afectando de manera desproporcionada la estabilidad del modelo. Esto da confianza en la robustez de los resultados obtenidos.
+El modelo M7 sigue siendo el mejor en términos de error predictivo, independientemente del método de validación utilizado. Además, la inclusión de Leverage en los cálculos de LOOCV confirma que no hay observaciones individuales que estén afectando de manera desproporcionada la estabilidad del modelo. Esto da confianza en la robustez de los resultados obtenidos.
 
 # Referencias
 
