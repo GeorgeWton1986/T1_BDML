@@ -214,14 +214,19 @@ base_faltantes
 
 # gráfica de los valores faltantes
 ggplot(base_faltantes, aes(x = reorder(skim_variable, -n_missing), y = p_missing, fill = skim_variable)) +
-  geom_bar(stat = "identity", color = "black", width = 0.5) +  
+  geom_bar(stat = "identity", color = "black", fill = "gray70", width = 0.5) +  
   scale_y_continuous(labels = scales::percent) +  
-  scale_fill_manual(values = c("lightsalmon", "lightpink", "lightblue")) +  
-  labs(title = "Porcentaje de valores faltantes por variables", 
+  labs(title = "GRÁFICO 1 - PORCENTAJE DE VALORES FALTANTES POR VARIABLES", 
        x = "Variables",
        y = "Porcentaje de valores faltantes") + 
-  theme_minimal() +
-  theme(axis.text.x = element_text(hjust = 1))
+  theme_classic() +  # **Formato más limpio y académico**
+  theme(plot.title = element_text(size = 12, hjust = 0.5),  
+        axis.title = element_text(size = 10),  
+        axis.text = element_text(size = 10)) +  
+  coord_flip()  
+
+# Guardar 
+ggsave("valoresfaltantes1.png", dpi = 300)
 
 # Imputación de valores faltantes con el Método 1: Media/Mediana
 
@@ -239,15 +244,24 @@ df_salario <- df_salario  %>%
 
 ## Imputación de variable continua: salario por hora
 
-### Gráfica de la distribución del salario por hora
-ggplot(df_salario, aes(salario_hora)) +
-  geom_histogram(color = "#000000", fill = "#0099F8") +
-  geom_vline(xintercept = median(df_salario$salario_hora, na.rm = TRUE), linetype = "dashed", color = "red") +
-  geom_vline(xintercept = mean(df_salario$salario_hora, na.rm = TRUE), linetype = "dashed", color = "blue") +  
-  ggtitle(" Ingreso Total por hora") +
+## Gráfica de la distribución del salario por hora
+ggplot(df_salario, aes(x = salario_hora)) +
+  geom_histogram(color = "black", fill = "gray70", bins = 50) + 
+  geom_vline(xintercept = median(df_salario$salario_hora, na.rm = TRUE), 
+             linetype = "dashed", color = "black", linewidth = 1) +  # mediana
+  geom_vline(xintercept = mean(df_salario$salario_hora, na.rm = TRUE), 
+             linetype = "dotted", color = "blue", linewidth = 1) +  # media
+  scale_x_continuous(labels = comma) +  
+  ggtitle("GRÁFICO 2-INGRESO TOTAL POR HORA") +  
+  labs(x = "Salario por hora", 
+       y = "Frecuencia") +
   theme_classic() +
-  theme(plot.title = element_text(size = 18))
+  theme(plot.title = element_text(size = 12, hjust = 0.5),  
+        axis.text = element_text(size = 10),
+        axis.title = element_text(size = 10))
 
+# Guardar AER
+ggsave("salariohora2.png", dpi = 300)
 #### Debido a que la distribución del ingreso total por hora tiene un cola a la derecha, se deicide utilizar la mediana para imputar los valores faltantes.
 
 ### Imputación de valores faltantes para variable continua
@@ -265,19 +279,19 @@ Una gran cantidad de evidencia en economía laboral sugiere que el perfil de eda
 En economia es usual formular modelos con variables que tengan una condicion cuadratica, este tipo de modelos lo que buscan es captar los efectos marginales decrecientes o crecientes en la funcion. En este sentido, el modelo de estimación planteado esta en funcion de una sola variables (age).
 
 $$
-log(w) = β_0 + β_1Age + β_2Age^2+ u    (2)
+log(w) = β_0 + β_1Age + β_2Age^2 + u \quad (1)
 $$
 
 Ademas, es importante recordar que el estimador $$β_1$$ no mide la variacion en $$Log (w)$$, porque, al realizar un analisis ceteris paribus sobre la variable $$Age^2$$, la variable $$age$$ será constante. Por lo tanto, la ecuación estimada, es:
 
 $$
-log(\hat{w})=\hat{β_0}+\hat{β_1}Age+\hat{β_2}Age^2
+log(\hat{w}) = \hat{β_0} +\hat{β_1}Age +\hat{β_2}Age^2 + u \quad (2)
 $$
 
 De la estimación anterior, se tiene una aproximación luego de derivar la varible $$Log (w)$$ entre la variable $$Age$$, así
 
-$$
-\Delta log(\hat{w})/\Delta Age=\hat{β_1}+2\hat{β_2}Age
+$$ 
+\frac{\Delta \log(\hat{w})}{\Delta \textit{Age}} =\hat{β_1} + 2\hat{β_2}Age + u \quad (3)
 $$
 
 Ahora, se puede mencionar que, la relación $$Log (w)$$ y $$\Delta Age$$ depende de la variable $$Age$$. Entonces, si se reemplaza el valor de 0 en la variable $$Age$$, se puede interpretar el coeficiente $$β_1$$ como el cambio marginal aproximado de pasar de 0 a 1. A continuación, estimaremos los coeficientes de la siguiente ecuación,
@@ -286,7 +300,16 @@ Ahora, se puede mencionar que, la relación $$Log (w)$$ y $$\Delta Age$$ depende
 #Estimacion de regresion log (salario)
 modelo_age_wage <- lm(log(salario_hora) ~ age + I(age^2), data = df_salario) 
 
-summary(modelo_age_wage)
+#Tabla modelo1
+stargazer(modelo_age_wage, 
+          type = "text",            
+          title = "TABLA 1-MODELO DE SALARIO",
+          covariate.labels = c("Edad", "Edad al Cuadrado"), 
+          dep.var.labels = "Log(Salario por Hora)",  
+          digits = 3,                
+          align = TRUE,           
+          star.cutoffs = c(0.1, 0.05, 0.01)) 
+
 
 ```
 
@@ -311,15 +334,23 @@ df_pred <- data.frame(
   salario = exp(log_salarios_predichos)  
 )
 
-# Graficar el perfil estimado de ingresos y edad
+# Grafico del perfil estimado de ingresos y edad
 ggplot(df_pred, aes(x = edad, y = salario)) +
-  geom_line(color = "blue", size = 1) +
+  geom_line(color = "black", size = 1) +  
   geom_point(data = df_pred %>% filter(edad %% 10 == 0),  
-             aes(x = edad, y = salario), color = "red", size = 2) +  # Puntos cada 10 años
-  labs(title = "Perfil estimado de ingresos por hora según la edad",
+             aes(x = edad, y = salario), color = "blue", size = 2) +  
+  labs(title = "GRÁFICO 3-PERFIL ESTIMADO DE INGRESOS POR HORA SEGÚN LA EDAD",
        x = "Edad",
-       y = "Salario promedio estimado") +
-  theme_minimal()
+       y = "Salario Promedio Estimado") +
+  theme_classic() +  
+  theme(
+    plot.title = element_text(size = 12, hjust = 0.5, face = "plain"),
+    axis.title = element_text(size = 10),  
+    axis.text = element_text(size = 10) 
+  )
+
+# Guardar
+ggsave("perfilingresosedad3.png", dpi = 300)
 
 ```
 
