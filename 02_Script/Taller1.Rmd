@@ -763,7 +763,7 @@ ggsave("divisionmuestra6.png", dpi = 300)
 
 ### 5.2 Comparación del rendimiento predictivo en términos de RMSE
 
-Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proporcionaron cinco modelos adicionales que permiten identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estiamdos previamente. Asi las cosas, en total son 8 modelos:
+Para realizar una comparación significativa de los rendimientos predictivos de los modelos anteriores, también se proporcionaron cinco modelos adicionales que permiten identificar el mejor rendimiento incluyendo modelos no lienales y con mayor complejidad respecto a los estiamdos previamente. Asi las cosas, estudiaran un total 8 especificaciones:
 
 #### Modelo 1: Regresión con Female y controles
 
@@ -837,7 +837,7 @@ m8 <- lm(log(salario_hora) ~ female + max_nivel_educ + female:max_nivel_educ + a
 test_sample$residuos_f_m2 <- residuals(lm(female ~ max_nivel_educ + tiempo_empresa + age, data = test_sample))
 ```
 
-Luego de definir los modelos, se procedra con las predicciones, comparacion los resultados del RMSE e identificacion del modelo con el mejor rendimiento predictivo.
+Luego de definir los modelos, se procedera con las predicciones, comparacion los resultados del RMSE e identificacion del modelo con el mejor rendimiento predictivo.
 
 ```{r}
 # Generar predicciones y RMSE
