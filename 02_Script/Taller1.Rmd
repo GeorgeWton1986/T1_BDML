@@ -196,7 +196,7 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
         -   7 = "No sabe, no informa"
 
-        .Analizando el histograma, se puede concluir que la mayor frecuencia de respuesta de las personas respecto a su nivele educativo es "No sabe, no informa".
+        Analizando el histograma, se puede concluir que la mayor frecuencia de respuesta de las personas respecto a su nivele educativo es "No sabe, no informa".
 
     -   *tiempo_empresa:* no tiene valores faltanes y tiene un 100% de los datos completos. El tiempo de trabajo en la empresa se encuentra medido en meses, donde el promedio es de 63,76 meses (5,3 años) con una desviación estándar de 89,48. El valor mínimo (primer cuartil) es de 0 meses, indicando probablemente que las personas en el momento de la encuesta habían iniciado a trabajar y no habían cumplido un mes en la empresa. La mediana es 24 meses (2 años) y el tercer cuatil corresponde a 84 meses (7 años). Finalmente, el máximo tiempo registrado del tiempo de trabajo en la empresa es de 720 meses (60 años), es importante resaltar que de acuerdo a las normativas laborales colombianas, una persona con trabajo formal puede llegar a trabajar en promedio entre 35 a 40 años, sin emabrgo, es posible que esto no aplique para personas con trabajos informales. Por último, se observa que el histograma tiene una cola a la derecha, indicando que la gran parte de la muestra se encuentra distribuida entre el primer y segundo cuartil.
 
@@ -238,10 +238,10 @@ Para la imputación de la variable continua, salario por hora, se analizó su di
 Con el resumen de estadísticas del nuevo data frame creado, se identifica la cantidad de valores faltantes (n_missing) en las variables salario_hora, segu_social y max_nivel_educ. A continuación, se procede a validar la información e imputar los valores faltantes de acuerdo a las caracterísitcas de las variables para poder estimar los modelos más adelante.
 
 ```{r}
-# datos faltantes con skim
+# Datos faltantes con skim
 base_faltantes <- skim(df_salario) %>% select( skim_variable, n_missing)
 
-# calcular el porcentaje de valores faltantes
+# Calcular el porcentaje de valores faltantes
 obs <- nrow(df_salario) 
 
 base_faltantes<- base_faltantes %>% mutate(p_missing = n_missing/obs)
@@ -250,7 +250,7 @@ base_faltantes
 # ordenar de forma descendente
 base_faltantes <- base_faltantes %>% arrange(-n_missing)
 
-# mantener solo las variables con valores faltantes
+# Mantener solo las variables con valores faltantes
 base_faltantes<- base_faltantes %>% filter(n_missing!= 0)
 base_faltantes
 
@@ -316,48 +316,49 @@ sum(is.na(df_salario))
 
 ## 3. Perfil de edad-salario
 
-Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”. En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
+Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”. En esta subsección vamos a estimar el perfil de *edad-salario* para los individuos de esta muestra:
 
-En economia es usual formular modelos con variables que tengan una condicion cuadratica, este tipo de modelos lo que buscan es captar los efectos marginales decrecientes o crecientes en la funcion. En este sentido, el modelo de estimación planteado esta en funcion de una sola variables $$Age$$.
+En economia es usual formular modelos con variables que tengan una condicion cuadratica, este tipo de modelos lo que buscan es captar los efectos marginales decrecientes o crecientes en la funcion. En este sentido, el modelo de estimación planteado esta en funcion de una sola variables $Age$.
 
 $$
 log(w) = β_0 + β_1Age + β_2Age^2 + u \quad (1)
 $$
 
-Ademas, es importante recordar que el estimador $$β_1$$ no mide la variacion en $$Log (w)$$, porque, al realizar un analisis ceteris paribus sobre la variable $$Age^2$$, la variable $$age$$ será constante. Por lo tanto, la ecuación estimada, es:
+Ademas, es importante recordar que el estimador $β_1$ no mide la variacion en $Log (w)$, porque, al realizar un analisis ceteris paribus sobre la variable $Age^2$, la variable $Age$ será constante. Por lo tanto, la ecuación estimada, es:
 
 $$
 log(\hat{w}) = \hat{β_0} +\hat{β_1}Age +\hat{β_2}Age^2 + u \quad (2)
 $$
 
-De la estimación anterior, se tiene una aproximación luego de derivar la varible $$Log (w)$$ entre la variable $$Age$$, así
+De la estimación anterior, se tiene una aproximación luego de derivar la varible $Log (w)$ entre la variable $Age$, así
 
 $$ 
 \frac{\Delta \log(\hat{w})}{\Delta \textit{Age}} =\hat{β_1} + 2\hat{β_2}Age + u \quad (3)
 $$
 
-Ahora, se puede mencionar que, la relación $$Log (w)$$ y $$\Delta Age$$ depende de la variable $$Age$$. Entonces, si se reemplaza el valor de 0 en la variable $$Age$$, se puede interpretar el coeficiente $$β_1$$ como el cambio marginal aproximado de pasar de 0 a 1. A continuación, estimaremos los coeficientes de la siguiente ecuación,
+Ahora, se puede mencionar que, la relación $Log (w)$ y $\Delta Age$ depende de la variable $Age$. Entonces, si se reemplaza el valor de 0 en la variable $Age$, se puede interpretar el coeficiente $β_1$ como el cambio marginal aproximado de pasar de 0 a 1. A continuación, estimaremos los coeficientes de la siguiente ecuación,
 
 ```{r}
-#Estimacion de regresion log (salario)
+# Estimacion de regresion log (salario)
 modelo_age_wage <- lm(log(salario_hora) ~ age + I(age^2), data = df_salario) 
 
-#Tabla modelo1
-stargazer(modelo_age_wage, 
-          type = "text",            
-          title = "TABLA 1-MODELO DE SALARIO",
-          covariate.labels = c("Edad", "Edad al Cuadrado"), 
-          dep.var.labels = "Log(Salario por Hora)",  
-          digits = 3,                
-          align = TRUE,           
-          star.cutoffs = c(0.1, 0.05, 0.01)) 
+# Tabla modelo1
+t_modelo1 <- stargazer(modelo_age_wage, 
+                       type = "text",
+                       title = "TABLA 1-MODELO DE SALARIO",
+                       covariate.labels = c("Edad", "Edad al Cuadrado"),
+                       dep.var.labels = "Log(Salario por Hora)",
+                       digits = 3,
+                       align = TRUE,
+                       star.cutoffs = c(0.1, 0.05, 0.01)) 
+print(t_modelo1)
 
 
 ```
 
-# Interpretación de los resultados de la regresión log (salario)
+### Interpretación de los resultados de la regresión log (salario)
 
-El resultado de la estimación indica que el coeficiente $$Age$$ es positivo y $$Age^2$$ es negativo, esto predetermina que, valores pequeños en $$Age$$ tiene un efecto positivo en $$log(w)$$, por el contrario valores grandes en $$Age$$ genera una condicion de decrecimiento sobre el $$log(w)$$. De esta manera, tomaremos los multiplos de 18 años para realizar el analisis del cambio $$\Delta log(\hat{w})$$. Veamos, cuando la variable $$Age$$ es igual a 18 años, $$\Delta log(\hat{w})$$ es igual a 2,66% Ahora, cambiamos el valor a 36 años, $$$\Delta log(\hat{w})$$ es igual a 0,69% por último, $$Age$$ sera 54 años y por lo tanto $$\Delta log(\hat{w})$$ es igual a -1,29%.
+El resultado de la estimación indica que el coeficiente $Age$ es positivo y $Age^2$ es negativo, esto predetermina que, valores pequeños en $Age$ tiene un efecto positivo en $log(w)$, por el contrario valores grandes en $Age$ genera una condicion de decrecimiento sobre el $log(w)$. De esta manera, tomaremos los multiplos de 18 años para realizar el analisis del cambio $\Delta log(\hat{w})$. Veamos, cuando la variable $Age$ es igual a 18 años, $\Delta log(\hat{w})$ es igual a 2,66% Ahora, cambiamos el valor a 36 años, $\Delta log(\hat{w})$ es igual a 0,69% por último, $Age$ sera 54 años y por lo tanto $\Delta log(\hat{w})$ es igual a -1,29%, lo cual responde a lo mencionado al principio de esta sección.
 
 ```{r}
 # Gráfico del perfil estimado de ingresos y edad
@@ -435,7 +436,7 @@ ggsave("perfilingresosedad3.png", dpi = 300)
 
 ```
 
-Con el analisis anterior, podemos observar el comportamiento de la ecuación estimada es parabolico, es decir, en la "edad pico" se encuentra el punto de inflexión. Todas las edades menores a la "edad pico", la variable $$log(\hat{w})$$ será cerciente y para edades mayores a la "edad pico" la varible $$log(\hat{w})$$ seran decreciente. Asi las cosas, es necesario conocer como se calcula el punto de inflexión.
+Con el analisis anterior, podemos observar el comportamiento de la ecuación estimada es parabolico, es decir, en la "edad pico" se encuentra el punto de inflexión. Todas las edades menores a la "edad pico", la variable $log(\hat{w})$ será cerciente y para edades mayores a la "edad pico" la varible $log(\hat{w})$ seran decreciente. Asi las cosas, es necesario conocer como se calcula el punto de inflexión.
 
 $$
 \frac{\Delta \log(\hat{w})}{\Delta \text{Age}} = 0  \quad (4)
@@ -461,7 +462,7 @@ coefs
 ```
 
 ```{r}
-#Extraer los coeficientes de la regresión
+# Extraer los coeficientes de la regresión
 
 b0 <- coefs [1] #Intercepto
 b1 <- coefs [2] #age
@@ -470,7 +471,7 @@ b2 <- coefs [3] #age^2
 ```
 
 ```{r}
-#Obtener la edad pico del problema segun los betas obtindos
+# Obtener la edad pico del problema segun los betas obtindos
 
 peak_age <- -b1/(2*b2)
 peak_age
@@ -479,14 +480,13 @@ peak_age
 
 El punto de inflexión de la ecuacion estimada donde esta localizada la edad pico corresponde a 42.25 años.
 
-Significancia: Según los resultados obtenidos en la regresión todos los coeficientes obtenidos son estadisticamente significativos al 0.01 (99%).
+*Significancia:* Según los resultados obtenidos en la regresión todos los coeficientes obtenidos son estadisticamente significativos al 0.01 (99%).
 
-Bondad de ajuste: El R² es 0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajores indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo.
+*Bondad de ajuste:* El R² es 0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajos indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo.
 
-# Análisis de la “edad pico” con sus respectivos intervalos de confianza.
+### Análisis de la “edad pico” con sus respectivos intervalos de confianza.
 
-Luego de estimar, predecir y analizar las ecuaciones y gráficas podemos sugerir que el comportamiento del salario en funcion de la edad en la población encuestada sugiere que los salarios son bajos a la edad de 18 años. Además, se noto que el salario mejora con el aumento de los años. No obstante, el ritmo de crecimiento del salario es más grande en comparación con edades medias, como por ejemplo, los 36 años, donde se registro un cambio de 0,69%. De otro lado, se registro la edad pico para este estudio en 42.25 años de edad, este punto es importante por dos razones. La primera, es el punto de inflexión entre el cambio positivo y el cambio negativo  en el ingreso. la segunda, que en promedio se referencia la edad pico a los 50 años, esto puede sugerir que podemos tener otras variables que no fueron incluidas en el estudio/ecuación que generen una disminución de la edad y obtener mejores salarios. 
-
+Luego de estimar, predecir y analizar las ecuaciones y gráficas podemos sugerir que el comportamiento del salario en funcion de la edad en la población encuestada indica que los salarios son bajos a la edad de 18 años. Además, se noto que el salario mejora con el aumento de los años. No obstante, el ritmo de crecimiento del salario es más grande en comparación con edades medias, como por ejemplo, los 36 años, donde se registro un cambio de 0,69%. De otro lado, se registró la edad pico para este estudio en 42.25 años de edad, este punto es importante por dos razones. La primera, es el punto de inflexión entre el cambio positivo y el cambio negativo en el ingreso. la segunda, que en promedio se referencia la edad pico a los 50 años, esto puede sugerir que podemos tener otras variables que no fueron incluidas en el estudio/ecuación que generen una disminución de la edad y obtener mejores salarios.
 
 ```{r}
 # Función que obtiene los coefficientes de modelo
@@ -551,22 +551,15 @@ ggsave("histogramadistribucionmuestra4.png", plot = p, dpi = 300, width = 8, hei
 
 ```
 
-
-En conclusion, es de notar que esta variable no es la unica que determina el valor, podriamos incluir, por ejemplo, la industria, la experiencia de laboral, la cantidad de años de estudio, ranking institucion educativa, etc. y otras que habilidades sociales que pueden ser dificiles de cuantificar en cuyo casos podria ayudar a explicar el comportamiento del salario en funcion de la edad. 
+En conclusion, es de notar que esta variable no es la unica que determina el valor, podriamos incluir, por ejemplo, la industria, la experiencia de laboral, la cantidad de años de estudio, ranking institucion educativa, etc. y otras que habilidades sociales que pueden ser dificiles de cuantificar en cuyo casos podria ayudar a explicar el comportamiento del salario en funcion de la edad.
 
 ## 4.La brecha salarial de género.
 
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
 
 $$
-<<<<<<< HEAD
 log(w) = β_1 + β_2Female + u \quad (8)
-$$ 
-donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
-$$
-log(w) = β1 + β2Female + u \quad (8)
-$$ 
-donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
+$$ donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
 
 ```{r}
 #Se crea la variable female en nuestra base
@@ -769,8 +762,7 @@ Para realizar una comparación significativa de los rendimientos predictivos de 
 
 $$
 log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa  +  β_4age + u \quad (9)
-$$ 
-
+$$
 
 #### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
 
