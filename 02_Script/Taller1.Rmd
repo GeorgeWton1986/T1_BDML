@@ -162,7 +162,7 @@ str(df_salario)
   
 ```
 
-Así mismo, para poder trabjar con los datos de forma adecuda, es necesario realizar un análisis descirptivo de las variables seleccionadas como se muestra a continuación:
+Así mismo, para poder trabajar con los datos de forma adecuada, es necesario realizar un análisis descriptivo de las variables seleccionadas como se muestra a continuación:
 
 -   **Tipos de datos:**
 
@@ -170,11 +170,11 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
     -   *Interger:* como variables categóricas con números enteros se identifica a las variables, age, ocu, sex, max_nivel_educ, tiempo_empresa, tamaño_empresa y depto.
 
--   **Estadísticas descriptivas por variables:** (describir si tiene missing values, media, complete_rate, desviación estándar, cuartiles)
+-   **Estadísticas descriptivas por variables:**
 
     -   *salario_hora:* la variable dependiente presenta 1.778 valores faltantes, lo que se traduce en un 89,25% de los valores completos. La media del salario_hora es de 8.541 COP y una desviación estándar de 13.86. El valor mínimo del salario por hora es de 0,47 COP, el primer cuartil de los datos son 3.796 COP, el sgundo cuartil o también conocido como la mediana de los datos es de 4.837 COP, el tercer cuartil es 7.899 COP y por último el máximo salario por hora es de 350.583 COP. Por último, el histograma indica una asimetría positiva debido al valor máximo.
 
-    -   *age:* la variable no cuenta con valores faltntes, indicando el 100% de sus valores completos. La edad promedio de los individuos es de 39 años, con una desviación estándar de 13,48. La edad mínima registrada es 18 años, el primer cuartil corresponde a 28 años, la mediana a 38 años, el tercer cuatil a 50 años y el valor máximo es de 94 años. A partir del histograma, se observa un concentración promedio en edades menores al segundo y tercer cuaril.
+    -   *age:* la variable no cuenta con valores faltntes, indicando el 100% de sus valores completos. La edad promedio de los individuos es de 39 años, con una desviación estándar de 13,48. La edad mínima registrada es 18 años, el primer cuartil corresponde a 28 años, la mediana a 38 años, el tercer cuatil a 50 años y el valor máximo es de 94 años. A partir del histograma, se observa unaóconcentración promedio en edades menores al segundo y tercer cuaril.
 
     -   *ocu:* la variable no presenta valores faltantes y tiene completos el 100% de los datos. Dado que es una variable dicotómica, no se considera relevante explicar otras estadísticas.
 
@@ -196,11 +196,11 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
         -   7 = "No sabe, no informa"
 
-        Analizando el histograma, se puede concluir que la mayor frecuencia de respuesta de las personas respecto a su nivele educativo es "No sabe, no informa".
+        Analizando el histograma, se puede concluir que la mayor frecuencia de respuesta de las personas respecto a su nivel educativo es "No sabe, no informa".
 
-    -   *tiempo_empresa:* no tiene valores faltanes y tiene un 100% de los datos completos. El tiempo de trabajo en la empresa se encuentra medido en meses, donde el promedio es de 63,76 meses (5,3 años) con una desviación estándar de 89,48. El valor mínimo (primer cuartil) es de 0 meses, indicando probablemente que las personas en el momento de la encuesta habían iniciado a trabajar y no habían cumplido un mes en la empresa. La mediana es 24 meses (2 años) y el tercer cuatil corresponde a 84 meses (7 años). Finalmente, el máximo tiempo registrado del tiempo de trabajo en la empresa es de 720 meses (60 años), es importante resaltar que de acuerdo a las normativas laborales colombianas, una persona con trabajo formal puede llegar a trabajar en promedio entre 35 a 40 años, sin emabrgo, es posible que esto no aplique para personas con trabajos informales. Por último, se observa que el histograma tiene una cola a la derecha, indicando que la gran parte de la muestra se encuentra distribuida entre el primer y segundo cuartil.
+    -   *tiempo_empresa:* no tiene valores faltantes y tiene un 100% de los datos completos. El tiempo de trabajo en la empresa se encuentra medido en meses, donde el promedio es de 63,76 meses (5,3 años) con una desviación estándar de 89,48. El valor mínimo (primer cuartil) es de 0 meses, indicando probablemente que las personas en el momento de la encuesta habían iniciado a trabajar y no habían cumplido un mes en la empresa. La mediana es 24 meses (2 años) y el tercer cuartil corresponde a 84 meses (7 años). Finalmente, el máximo tiempo registrado del tiempo de trabajo en la empresa es de 720 meses (60 años), es importante resaltar que de acuerdo a las normativas laborales colombianas, una persona con trabajo formal puede llegar a trabajar en promedio entre 35 a 40 años, sin emabargo, es posible que esto no aplique para personas con trabajos informales. Por último, se observa que el histograma tiene una cola a la derecha, indicando que la gran parte de la muestra se encuentra distribuida entre el primer y segundo cuartil.
 
-    -   *tamaño_empresa:* no tiene valores faltanes y tiene un 100% de los datos completos. Ahora para comprender el análisis de las estadísticas es necesario conocer las respectivas categorías del tamaño de la empresa:
+    -   *tamaño_empresa:* no tiene valores faltantes y tiene un 100% de los datos completos. Ahora para comprender el análisis de las estadísticas es necesario conocer las respectivas categorías del tamaño de la empresa:
 
         -   1 = "Trabaja solo"
         -   2 = "2 a 3 personas"
@@ -214,18 +214,18 @@ Así mismo, para poder trabjar con los datos de forma adecuda, es necesario real
 
         De acuerdo al histograma, la distribución de la muestra sugiere que la mayoría de las personas trabajan en empresas de la categoría 9.
 
-    -   *depto:* no tiene valores faltanes y tiene un 100% de los datos completos. Esta variable contiene el código del departamento (11), el cuál se ha identificado como único valor en df_salario, haciendo referencia que todas las observaciones del data frame son personas que viven en Bogotá.
+    -   *depto:* no tiene valores faltantes y tiene un 100% de los datos completos. Esta variable contiene el código del departamento (11), el cuál se ha identificado como único valor en df_salario, haciendo referencia que todas las observaciones del data frame son personas que viven en Bogotá.
 
-    -   *formal:* no tiene valores faltanes y tiene un 100% de los datos completos. Dado que es una variable dicotómica, no se considera relevante explicar otras estadísticas. Sin embargo, toma el valor de 1 cuando la persona tiene un trabajo formal y 0 cuando la persona tiene un trabajo informal.
+    -   *formal:* no tiene valores faltantes y tiene un 100% de los datos completos. Dado que es una variable dicotómica, no se considera relevante explicar otras estadísticas. Sin embargo, toma el valor de 1 cuando la persona tiene un trabajo formal y 0 cuando la persona tiene un trabajo informal.
 
     -   *segu_social:* la variable tiene 1.403 valores faltante, es decir que cuenta con un 91,51% de datos completos, como es una variable categórica, es necesario conocer las mismas para comprender el análisis de las estadísticas:
 
-        -   1 = "Regimen contributivio"
+        -   1 = "Regimen contributivo"
         -   2 = "Regimen especial"
         -   3 = "Regimen subsidiado"
         -   9 = "No sabe, no informa"
 
-        A partir del histograma, la distribución de la muestra de acuerdo a las categorías se centra principalmente en la categoría 1, sin embargo, también se debe considerar a la categría 2.
+        A partir del histograma, la distribución de la muestra de acuerdo a las categorías se centra principalmente en la categoría 1, sin embargo, también se debe considerar a la categoría 2.
 
 #### Valores faltantes
 
