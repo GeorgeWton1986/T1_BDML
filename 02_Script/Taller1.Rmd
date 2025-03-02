@@ -270,7 +270,7 @@ sum(is.na(df_salario))
 
 Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”. En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
 
-En economia es usual formular modelos con variables que tengan una condicion cuadratica, este tipo de modelos lo que buscan es captar los efectos marginales decrecientes o crecientes en la funcion. En este sentido, el modelo de estimación planteado esta en funcion de una sola variables (age).
+En economia es usual formular modelos con variables que tengan una condicion cuadratica, este tipo de modelos lo que buscan es captar los efectos marginales decrecientes o crecientes en la funcion. En este sentido, el modelo de estimación planteado esta en funcion de una sola variables $$Age$$.
 
 $$
 log(w) = β_0 + β_1Age + β_2Age^2+ u    (2)
@@ -381,6 +381,8 @@ Significancia: Según los resultados obtenidos en la regresión todos los coefic
 Bondad de ajuste: El R² es 0.0194 y R² ajustado da el valor de 0.01932 , esto indica que el modelo explica el salario en un 1.93%. Estos valores bajores indican que el modelo captura una parte de la relación y existen otros factores que afectan el logaritmo de salario no incluidos en el modelo.
 
 # Análisis de la “edad pico” con sus respectivos intervalos de confianza.
+
+Una gran cantidad de evidencia en economía laboral sugiere que el perfil de edad-salario del trabajador típico tiene una trayectoria predecible: “Los salarios tienden a ser bajos cuando el trabajador es joven; aumentan a medida que el trabajador envejece, alcanzando un máximo alrededor de los 50 años; y la tasa salarial tiende a permanecer estable o a disminuir ligeramente después de los 50 años”. En esta subsección vamos a estimar el perfil de edad-salario para los individuos de esta muestra:
 
 ```{r}
 # Función que obtiene los coefficientes de modelo
