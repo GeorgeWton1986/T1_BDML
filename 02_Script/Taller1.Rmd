@@ -38,7 +38,7 @@ La GEIH tiene una muestra anual aproximada de 315,000 hogares a nivel nacional, 
 
 #### Configuración inicial del ambiente de trabajo
 
-Para llevar a cabo el análisis, utilizamos "pacman" para facilitar la carga e instalación de varios paquetes en R que permiten la recolección, manipulación, exploración y visualización de datos. Así mismo, utilizaremos "p_load( )" para instalar y cargar multiples paquetes en unsa sola línea de codigo como se muestra a continuación:
+Para llevar a cabo el análisis, utilizamos "pacman" para facilitar la carga e instalación de varios paquetes en R que permiten la recolección, manipulación, exploración y visualización de datos. Así mismo, utilizaremos "p_load( )" para instalar y cargar multiples paquetes en una sola línea de codigo como se muestra a continuación:
 
 ```{r}
 if(!require(pacman)) install.packages("pacman") ; require(pacman)
