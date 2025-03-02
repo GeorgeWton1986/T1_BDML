@@ -50,6 +50,7 @@ p_load(rvest,     # Permite realizar web scraping en R
        corrplot,  # Correlation plots
        stargazer, # Tables/outputs to tex
        ggplot2,   # Graficación
+       scales,    # Formato de números para gráficas
        boot,      # Permite aplicar bootstrap
        tidyverse, # Análisis y tranformación de datos
        caret      # Predicción de modelos
@@ -58,9 +59,9 @@ p_load(rvest,     # Permite realizar web scraping en R
 
 #### Proceso de extracción de datos
 
-La base de datos se encuentra almacenada en una página web, por lo que se realizó un scrap del sitio web <https://ignaciomsarmiento.github.io/GEIH2018_sample/>. En primer lugar, se exploró la URL para identificar la información almacenada, evidenciando que se encontraba dividida en 10 data chunks. Se inspeccionó cada una de ellas y se realizó una iteración para consolidar la información de cada tabla y crear un dataframe llamado df_GEIH con 32.177 observaciones con 177 variables.
+La base de datos se encuentra almacenada en una página web, por lo que se realizó scrapping del sitio web <https://ignaciomsarmiento.github.io/GEIH2018_sample/>. En primer lugar, se exploró la URL para identificar la información almacenada, evidenciando que se encontraba dividida en 10 data chunks. Se inspeccionó cada una de ellas y se realizó una iteración para consolidar la información de cada tabla y crear un dataframe llamado df_GEIH con 32.177 observaciones con 177 variables.
 
-En el proceso de extraccción, se emplea el paquete `rvest` para analizar el contenido HTML y el paquete `dplyr` para combinar la lista de tablas en el dataframe, adicionalmente, se aplica una primera limpieza de los datos con el condicional `if` para eliminar la columna innecesaria de índice.
+En el proceso de extraccción, se emplea el paquete `rvest` para analizar el contenido de la página web y el paquete `dplyr` para combinar la lista de tablas en el dataframe, adicionalmente, se aplica una primera limpieza de los datos con el condicional `if` para eliminar la columna innecesaria de índice.
 
 ```{r}
 # Lista tablas
@@ -81,6 +82,11 @@ for (i in 1:10) {
 
 # Unir todas las tablas en un solo dataframe
 df_GEIH <- bind_rows(todas_las_tablas)
+
+```
+
+```{r}
+# Eliminar columna de indice 
 
 if ("...1" %in% colnames(df_GEIH)) {
   df_GEIH <- df_GEIH %>% select(-`...1`)
@@ -117,7 +123,7 @@ Se construye un nuevo dataframe a partir de la Gran Encuesta Integrada de Hogare
 
 A continuación, se describen las variables elegidas y su pertinencia en la estimación del modelo, justificando su inclusión con base en la teoría económica y la literatura empírica sobre determinantes salariales.
 
--   **Y_total_m_ha (Ingreso total mensual):** Esta variable es la dependiente y capta el salario total mensual que recibe un trabajador, que es directamente el objeto de análisis en estudios de salarios.
+-   **Y_total_m_ha (Ingreso total mensual):** Esta variable es la dependiente y capta el salario por horal del total mensual que recibe un trabajador, que es directamente el objeto de análisis en estudios de salarios.
 
 -   **Age (Edad):** La edad influye en los salarios, ya que está vinculada a la experiencia laboral y las habilidades adquiridas a lo largo del tiempo. En general, la relación entre edad y salario es positiva hasta cierto punto, ya que la experiencia suele traducirse en mayores ingresos. Sin embargo, en etapas más avanzadas, esta relación puede estabilizarse o incluso disminuir. Según X, los jóvenes enfrentan tasas de desempleo más altas en el mercado laboral, mientras que las personas de mayor edad suelen experimentar períodos de desempleo más cortos, pero con una duración más prolongada. Orlando, A. (2000). DNP.
 
@@ -129,7 +135,7 @@ A continuación, se describen las variables elegidas y su pertinencia en la esti
 
 -   **P6870 (Tamaño de la empresa):** El tamaño de la empresa es una variable clave en la determinación salarial. Según Cuervo Alvarado (2022), las pequeñas empresas, que emplean de 1 a 10 personas, son determinantes en el tamaño y la producción de la industria. Sin embargo, en general, las empresas más grandes tienen una mayor capacidad económica, lo que les permite ofrecer salarios más altos y proporcionar mejores compensaciones a sus empleados.
 
--   **Depto (Departamento):** El departamento de un empleado puede influir en el salario. Diferentes departamentos tienen diferentes niveles de remuneración, dependiendo de la especialización, la demanda de las habilidades y el tipo de trabajo realizado.
+-   **Depto (Departamento):** El departamento donde vive un empleado puede influir en el salario. Diferentes departamentos tienen diferentes niveles de remuneración, dependiendo de la especialización, la demanda de las habilidades y el tipo de trabajo realizado.
 
 -   **Formal (Formalidad del empleo):** Según Orlando (2000), en su informe del DNP, la formalidad del empleo se refiere a si el trabajador está registrado formalmente o si trabaja en la informalidad. Los trabajos formales suelen tener mejores salarios, beneficios y seguridad social, mientras que los trabajos informales presentan salarios más bajos y menor estabilidad.
 
@@ -140,7 +146,7 @@ A continuación, se describen las variables elegidas y su pertinencia en la esti
 df_salario <- df_filtrado %>%
   select(y_total_m_ha, age, ocu, sex, maxEducLevel, p6426, p6870, depto, formal, p6100)
 
-# cambio del nombre de algunas variables
+# Cambio del nombre de algunas variables
 df_salario <-  df_salario %>% 
   rename(salario_hora = y_total_m_ha,
          max_nivel_educ = maxEducLevel,
@@ -149,7 +155,8 @@ df_salario <-  df_salario %>%
          segu_social = p6100
          )
 
-# estadísticas de df_salario
+
+# Estadísticas de df_salario
 skim(df_salario)
 str(df_salario)
   
@@ -157,33 +164,68 @@ str(df_salario)
 
 Así mismo, para poder trabjar con los datos de forma adecuda, es necesario realizar un análisis descirptivo de las variables seleccionadas como se muestra a continuación:
 
--   Tipos de datos:
+-   **Tipos de datos:**
 
-    -   Numeric:
+    -   *Numeric:* como variable continua se identifica al salario_hora.
 
-    -   Interger:
+    -   *Interger:* como variables categóricas con números enteros se identifica a las variables, age, ocu, sex, max_nivel_educ, tiempo_empresa, tamaño_empresa y depto.
 
--   Estadísticas descriptivas por variables: (describir si tiene missing values, media, complete_rate, desviación estándar, cuartiles)
+-   **Estadísticas descriptivas por variables:** (describir si tiene missing values, media, complete_rate, desviación estándar, cuartiles)
 
-    -   salario_hora:
+    -   *salario_hora:* la variable dependiente presenta 1.778 valores faltantes, lo que se traduce en un 89,25% de los valores completos. La media del salario_hora es de 8.541 COP y una desviación estándar de 13.86. El valor mínimo del salario por hora es de 0,47 COP, el primer cuartil de los datos son 3.796 COP, el sgundo cuartil o también conocido como la mediana de los datos es de 4.837 COP, el tercer cuartil es 7.899 COP y por último el máximo salario por hora es de 350.583 COP. Por último, el histograma indica una asimetría positiva debido al valor máximo.
 
-    -   age:
+    -   *age:* la variable no cuenta con valores faltntes, indicando el 100% de sus valores completos. La edad promedio de los individuos es de 39 años, con una desviación estándar de 13,48. La edad mínima registrada es 18 años, el primer cuartil corresponde a 28 años, la mediana a 38 años, el tercer cuatil a 50 años y el valor máximo es de 94 años. A partir del histograma, se observa un concentración promedio en edades menores al segundo y tercer cuaril.
 
-    -   ocu:
+    -   *ocu:* la variable no presenta valores faltantes y tiene completos el 100% de los datos. Dado que es una variable dicotómica, no se considera relevante explicar otras estadísticas.
 
-    -   sex:
+    -   *sex:* la variable no presenta valores faltantes y tiene completos el 100% de los datos. Dado que es una variable dicotómica, no se considera relevante explicar otras estadísticas. Sin embargo, toma el valor de 1 cuando la persona es mujer y 0 cuando es hombre.
 
-    -   max_nivel_educ:
+    -   *max_nivel_educ:* la variable categorica para el nivel educativo presenta 1 valor faltante, por lo tanto, tiene un 99,99% de los datos completos. Ahora para comprender el análisis de las estadísticas es necesario conocer las respectivas categorías del máximo nivel educativo alcanzado o el último grado aprovado:
 
-    -   tiempo_empresa:
+        -   1 = "Ninguno"
 
-    -   tamaño_empresa:
+        -   2 = "Preescolar"
 
-    -   depto:
+        -   3 = "Básica primaria" (1ro - 5to)
 
-    -   formal:
+        -   4 = "Básica secundaria" (6to - 9no)
 
-    -   segu_social:
+        -   5 = "Media" (10mo - 13mo)
+
+        -   6 = "Superior o universitaria"
+
+        -   7 = "No sabe, no informa"
+
+        .Analizando el histograma, se puede concluir que la mayor frecuencia de respuesta de las personas respecto a su nivele educativo es "No sabe, no informa".
+
+    -   *tiempo_empresa:* no tiene valores faltanes y tiene un 100% de los datos completos. El tiempo de trabajo en la empresa se encuentra medido en meses, donde el promedio es de 63,76 meses (5,3 años) con una desviación estándar de 89,48. El valor mínimo (primer cuartil) es de 0 meses, indicando probablemente que las personas en el momento de la encuesta habían iniciado a trabajar y no habían cumplido un mes en la empresa. La mediana es 24 meses (2 años) y el tercer cuatil corresponde a 84 meses (7 años). Finalmente, el máximo tiempo registrado del tiempo de trabajo en la empresa es de 720 meses (60 años), es importante resaltar que de acuerdo a las normativas laborales colombianas, una persona con trabajo formal puede llegar a trabajar en promedio entre 35 a 40 años, sin emabrgo, es posible que esto no aplique para personas con trabajos informales. Por último, se observa que el histograma tiene una cola a la derecha, indicando que la gran parte de la muestra se encuentra distribuida entre el primer y segundo cuartil.
+
+    -   *tamaño_empresa:* no tiene valores faltanes y tiene un 100% de los datos completos. Ahora para comprender el análisis de las estadísticas es necesario conocer las respectivas categorías del tamaño de la empresa:
+
+        -   1 = "Trabaja solo"
+        -   2 = "2 a 3 personas"
+        -   3 = " 4 a 5 personas"
+        -   4 = "6 a 10 personas"
+        -   5 = "11 a 19 personas"
+        -   6 = "20 a 30 personas"
+        -   7 = "31 a 50 personas"
+        -   8 = "51 a 100 personas"
+        -   9 = "101 o más personas"
+
+        De acuerdo al histograma, la distribución de la muestra sugiere que la mayoría de las personas trabajan en empresas de la categoría 9.
+
+    -   *depto:* no tiene valores faltanes y tiene un 100% de los datos completos. Esta variable contiene el código del departamento (11), el cuál se ha identificado como único valor en df_salario, haciendo referencia que todas las observaciones del data frame son personas que viven en Bogotá.
+
+    -   *formal:* no tiene valores faltanes y tiene un 100% de los datos completos. Dado que es una variable dicotómica, no se considera relevante explicar otras estadísticas. Sin embargo, toma el valor de 1 cuando la persona tiene un trabajo formal y 0 cuando la persona tiene un trabajo informal.
+
+    -   *segu_social:* la variable tiene 1.403 valores faltante, es decir que cuenta con un 91,51% de datos completos, como es una variable categórica, es necesario conocer las mismas para comprender el análisis de las estadísticas:
+
+        -   1 = "Regimen contributivio"
+        -   2 = "Regimen especial"
+        -   3 = "Regimen subsidiado"
+        -   9 = "No sabe, no informa"
+
+        A partir del histograma, la distribución de la muestra de acuerdo a las categorías se centra principalmente en la categoría 1, sin embargo, también se debe considerar a la categría 2.
 
 #### Valores faltantes
 
@@ -203,7 +245,7 @@ base_faltantes <- skim(df_salario) %>% select( skim_variable, n_missing)
 obs <- nrow(df_salario) 
 
 base_faltantes<- base_faltantes %>% mutate(p_missing = n_missing/obs)
-head(base_faltantes)
+base_faltantes
 
 # ordenar de forma descendente
 base_faltantes <- base_faltantes %>% arrange(-n_missing)
@@ -517,9 +559,14 @@ En conclusion, es de notar que esta variable no es la unica que determina el val
 Los responsables de las políticas se han preocupado durante mucho tiempo por la brecha salarial de género.
 
 $$
+<<<<<<< HEAD
 log(w) = β_1 + β_2Female + u \quad (8)
 $$ 
 donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
+=======
+log(w) = β1 + β2Female + u \quad (8)
+$$ donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
+>>>>>>> 1f5dcbc04b52a238164faeb645b036696b14b741
 
 ```{r}
 #Se crea la variable female en nuestra base
@@ -720,7 +767,11 @@ Para realizar una comparación significativa de los rendimientos predictivos de 
 
 #### Modelo 1: Regresión con Female y controles
 
+<<<<<<< HEAD
 $$log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa  +  β_4age + u \quad (9)$$ 
+=======
+$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa  +  β4age + u \quad (9)$$
+>>>>>>> 1f5dcbc04b52a238164faeb645b036696b14b741
 
 #### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
 
@@ -827,12 +878,11 @@ stargazer(mse_table, type = "text", summary = FALSE, title = "TABLA 5-COMPARACI�
 
 Se evaluaron ocho especificaciones diferentes usando Validation Set Approach para medir el rendimiento predictivo de los modelos con la métrica RMSE, la cual indica un mejor desempeño predictivo entre más bajo sea su nivel. El resultado hace evidente que el Modelo 7 tiene el menor valor de RMSE, con un valor de 13,448.67, por lo tanto, es el mejor en términos de RMSE. Esto sugiere que incluir controles adicionales como si la persona cuenta con seguridad social, si está en un trabajo formal, entre otros, aporta información relevante para predecir el cambio en los salarios.
 
-El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 13,448.67. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable formal, segu_social, la interacción female:segu_social y un término cuadrático I(age^2). El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (13,604.31). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de female, max_nivel_educ, tiempo_empresa y age.
+El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 13,448.67. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable formal, segu_social, la interacción female:segu_social y un término cuadrático $age^2$. El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (13,604.31). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de female, max_nivel_educ, tiempo_empresa y age.
 
 Los modelos con no linealidades e interacciones presentan mejoras en algunos casos, como el Modelo 8, que incorpora la interacción female:max_nivel_educ y logra un RMSE similar al Modelo 1 (13,644.11). El Modelo 2 es el peor en términos predictivos (RMSE = 16,113.97). Esto es esperado, ya que este modelo solo estima los residuos de female, sin utilizar directamente la variable dependiente log(salario_hora).
 
 En términos generales, los modelos que incluyen mayores niveles de complejidad tienden a mejorar el desempeño predictivo, pero no todos los ajustes mejoran la precisión. La inclusión de interacciones y términos no lineales es útil solo si está bien justificada teóricamente.
-
 
 ###5.c.iii. Especificación del modelo con error de predicción: Modelo 7
 
@@ -876,18 +926,18 @@ boxplot(errores,
 abline(h = percentiles, col = "black", lty = 2)
 
 ```
+
 El histograma de errores de predicción muestra una distribución sesgada a la derecha, lo que indica que la mayoría de los errores son pequeños, pero existen algunas observaciones con diferencias extremadamente grandes entre el salario real y el predicho. El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 44444, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
 
 Desde el punto de vista de la DIAN, estos valores atípicos pueden indicar posibles irregularidades. Los individuos con ingresos extremadamente altos podrían estar no declarando información, lo que podría justificar una revisión adicional. También es posible que algunos outliers sean simplemente el resultado de errores en los datos, por lo que sería necesario verificar la calidad de la información. Otra posibilidad es que el modelo no haya capturado algunas características clave del mercado laboral, lo que explicaría por qué ciertas observaciones presentan errores tan grandes.
 
 En conclusión, la DIAN podría enfocarse en analizar más a fondo los outliers para determinar si reflejan ingresos no declarados, errores en los datos o simplemente limitaciones del modelo. Para mejorar la precisión de las predicciones, sería recomendable incluir nuevas variables que expliquen mejor los salarios atípicamente altos o bajos. También sería útil realizar un análisis más detallado sobre la naturaleza de estos empleos y sus características tributarias, para evaluar si requieren una revisión adicional.
 
-
 ###5.d. Calculo de error predictivo con LOOCV
 
 Los dos modelos con menor RMSE en el paso anterior fueron el modelo 1 y el modelo 7, a continuación, se realizará el análisis correspondiente.
 
-Modelo 1 con LOOCV 
+Modelo 1 con LOOCV
 
 ```{r}
 ctrl <- trainControl(method = "LOOCV")
@@ -924,7 +974,7 @@ cat("Modelo 7 - LOOCV RMSE (Original):", round(rmse_m7_loocv_real, 2), "\n")
 
 ```
 
-Modelo 1 con Leverage LOOCV 
+Modelo 1 con Leverage LOOCV
 
 ```{r}
 # Modelo 1 con LOOCV y leverage
@@ -949,7 +999,7 @@ print(rmse_m1_loocv_laverage_real)
 
 ```
 
-Modelo 7 con Leverage LOOCV 
+Modelo 7 con Leverage LOOCV
 
 ```{r}
 # Modelo 7 con LOOCV y leverage
@@ -1002,8 +1052,6 @@ Los valores de RMSE calculados con LOOCV utilizando leverage muestran que las di
 Conclusión
 
 El modelo M7 sigue siendo el mejor en términos de error predictivo, independientemente del método de validación utilizado. Además, la inclusión de leverage en los cálculos de LOOCV confirma que no hay observaciones individuales que estén afectando de manera desproporcionada la estabilidad del modelo. Esto da confianza en la robustez de los resultados obtenidos.
-
-
 
 # Referencias
 
