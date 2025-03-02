@@ -563,10 +563,10 @@ $$
 log(w) = β_1 + β_2Female + u \quad (8)
 $$ 
 donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
-=======
+$$
 log(w) = β1 + β2Female + u \quad (8)
-$$ donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
->>>>>>> 1f5dcbc04b52a238164faeb645b036696b14b741
+$$ 
+donde Female es un indicador que toma uno si el individuo en la muestra se identifica como mujer.
 
 ```{r}
 #Se crea la variable female en nuestra base
@@ -767,15 +767,16 @@ Para realizar una comparación significativa de los rendimientos predictivos de 
 
 #### Modelo 1: Regresión con Female y controles
 
-<<<<<<< HEAD
-$$log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa  +  β_4age + u \quad (9)$$ 
-=======
-$$log(w) = β0 + β1Female + β2educ + β3tiempoempresa  +  β4age + u \quad (9)$$
->>>>>>> 1f5dcbc04b52a238164faeb645b036696b14b741
+$$
+log(w) = β_0 + β_1Female + β_2educ + β_3tiempoempresa  +  β_4age + u \quad (9)
+$$ 
+
 
 #### Modelo 2: Regresión auxiliar (FWL - residuos de Female)
 
-$$log(female) = β_0 + β_1educ + β_2tiempoempresa  + β_3age + u \quad (10)$$
+$$
+log(female) = β_0 + β_1educ + β_2tiempoempresa  + β_3age + u \quad (10)
+$$
 
 #### Modelo 3: Regresión con residuos de Female
 
