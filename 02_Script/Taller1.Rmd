@@ -750,7 +750,7 @@ df_pred <- rbind(df_pred_male, df_pred_female)
 df_pred$genero <- factor(df_pred$genero, levels = c("Male", "Female"))
 
 # Gráfico con los perfiles de salario predichos
-ggplot(df_pred, aes(x = age, y = salario, color = genero, fill = genero)) + 
+p_5 <- ggplot(df_pred, aes(x = age, y = salario, color = genero, fill = genero)) + 
   # Intervalo de confianza diferenciado por género
   geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci), alpha = 0.3, color = NA) +
   geom_line(size = 1) + 
@@ -762,8 +762,7 @@ ggplot(df_pred, aes(x = age, y = salario, color = genero, fill = genero)) +
     y = "Salario por hora")
 
 # Guardar 
-ggsave("GRÁFICO 5-PERFIL DE EDAD SALARIO PREDICHO POR GÉNERO.png", plot = p, dpi = 300, width = 8, height = 6)
-
+ggsave("GRÁFICO 5-PERFIL DE EDAD SALARIO PREDICHO POR GÉNERO.png", plot = p_5, dpi = 300, width = 8, height = 6)
 
 
 ```
