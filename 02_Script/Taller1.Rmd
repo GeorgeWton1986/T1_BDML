@@ -958,18 +958,48 @@ En términos generales, los modelos que incluyen mayores niveles de complejidad 
 #Calculo errores de predicción
 errores <- test_sample$salario_hora - exp(predict(m7, test_sample))
 
-#Distribución de los errores
-hist(errores, 
-     main = "GRÁFICO 7-DISTRIBUCIÓN DE ERRORES DE PREDICCIÓN", 
-     xlab = "Error de Predicción", 
-     col = "gray70", 
-     border = "white", 
-     font.main = 1)
-# Guardar 
-ggsave("GRÁFICO 7-DISTRIBUCIÓN DE ERRORES DE PREDICCIÓN.png", dpi = 300)
+df_errores <- data.frame(error = errores)
+
+h_7 <- ggplot(df_errores, aes(x = error)) +
+  geom_histogram(fill = "gray70", color = "white", bins = 30) +
+  labs(title = "GRÁFICO 7-DISTRIBUCIÓN DE ERRORES DE PREDICCIÓN",
+       x = "Error de Predicción",
+       y = "Frecuencia") +
+  theme_classic() +
+  theme(plot.background = element_rect(fill = "white", color = NA))  # Fondo blanco
+
+ggsave("GRÁFICO_7_DISTRIBUCIÓN_ERRORES_PREDICCIÓN.png", plot = h_7, dpi = 300, width = 8, height = 6)
 ```
 
 El histograma de errores de predicción muestra una distribución sesgada a la derecha, lo que indica que la mayoría de los errores son pequeños, pero existen algunas observaciones con diferencias extremadamente grandes entre el salario real y el predicho.
+
+```{r}
+#Identificar outliers en percentiles 2.5% y 97.5%
+outliers <- test_sample[errores < percentiles[1] | errores > percentiles[2], ]
+
+print(head(outliers))
+
+#Datos más extremos y box plot outliers
+par(font.main = 1)  #quitar nequilla
+
+# Definir percentiles
+percentiles <- quantile(df_errores$errores, probs = c(0.25, 0.75))  # Q1 y Q3
+
+# Crear el boxplot con percentiles
+box_8 <- ggplot(df_errores, aes(y = errores)) +
+  geom_boxplot(fill = "gray70", color = "black") +
+  geom_hline(yintercept = percentiles, color = "black", linetype = "dashed") +  # Agregar líneas de percentiles
+  labs(title = "GRÁFICO 8 - BOXPLOT DE ERRORES DE PREDICCIÓN", 
+       x = "Errores de Predicción",
+       y = "Valor del Error") + 
+  theme_classic() +
+  theme(plot.background = element_rect(fill = "white", color = NA))  # Fondo blanco
+
+# Guardar 
+ggsave("GRÁFICO 8-BOXPLOT DE ERRORES DE PREDICCIÓN.png", plot = box_8, dpi = 300)
+
+```
+
 
 ```{r}
 #Identificar outliers en percentiles 2.5% y 97.5%
@@ -982,7 +1012,7 @@ print(head(outliers))
 par(font.main = 1)  #quitar nequilla
 
 # Gráfico de boxplot con formato AER
-boxplot(errores, 
+box_8 <- boxplot(df_errores, 
         main = "GRÁFICO 8 - BOXPLOT DE ERRORES DE PREDICCIÓN", 
         xlab = "Errores de Predicción",  
         ylab = "Valor del Error",        
@@ -1000,7 +1030,7 @@ boxplot(errores,
 abline(h = percentiles, col = "black", lty = 2)
 
 # Guardar 
-ggsave("GRÁFICO 8-BOXPLOT DE ERRORES DE PREDICCIÓN.png", dpi = 300)
+ggsave("GRÁFICO 8-BOXPLOT DE ERRORES DE PREDICCIÓN.png", plot = box_8, dpi = 300)
 ```
 
 El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 75000, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
