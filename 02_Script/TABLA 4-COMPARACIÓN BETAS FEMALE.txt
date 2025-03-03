@@ -1,0 +1,8 @@
+
+TABLA 4-COMPARACIÓN BETAS FEMALE
+===========================
+                Beta_female
+---------------------------
+female            -0.107   
+residuos_female   -0.107   
+---------------------------

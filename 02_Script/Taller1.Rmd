@@ -936,11 +936,11 @@ mse_table6 <- data.frame(
 )
 
 # Formato tabla
-stargazer(mse_table6, type = "text", summary = FALSE, title = "TABLA 6-COMPARACIÓN DE RMSE ENTRE MODELOS")
+tabla_6 <- stargazer(mse_table6, type = "text", summary = FALSE, title = "TABLA 6-COMPARACIÓN DE RMSE ENTRE MODELOS")
 
 # Guardar tabla
-writeLines(t_errorstd_boot5, 
-           "TABLA 5-BOOTSTRAP ORDINARIO NO PARAMÉTRICO.txt")
+writeLines(tabla_6, 
+           "TABLA 6-COMPARACIÓN DE RMSE ENTRE MODELOS.txt")
 ```
 
 ### Discusión de los resultados de RMSE con Validation Set Approach
