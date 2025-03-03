@@ -910,9 +910,9 @@ writeLines(t_errorstd_boot5,
 
 Se evaluaron ocho especificaciones diferentes usando Validation Set Approach para medir el rendimiento predictivo de los modelos con la métrica RMSE, la cual indica un mejor desempeño predictivo entre más bajo sea su nivel. El resultado hace evidente que el Modelo 7 tiene el menor valor de RMSE, con un valor de 13,448.67, por lo tanto, es el mejor en términos de RMSE. Esto sugiere que incluir controles adicionales como si la persona cuenta con seguridad social, si está en un trabajo formal, entre otros, aporta información relevante para predecir el cambio en los salarios.
 
-El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 13,448.67. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable *formal*, *segu_social*, la interacción *female:segu_socia*l y un término cuadrático $age^2$. El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (13,604.31). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de *female*, *max_nivel_educ*, *tiempo_empresa* y *age*.
+El Modelo 7 tiene el mejor desempeño predictivo con un RMSE de 10,940.350. Esto es consistente con su mayor nivel de complejidad, ya que incorpora no solo los controles básicos, sino también términos adicionales como la variable *formal*, *segu_social*, la interacción *female:segu_socia*l y un término cuadrático $age^2$. El Modelo 1 sigue siendo un modelo competitivo, obteniendo el segundo mejor RMSE (11,121.560). Aunque es más simple que el Modelo 7, sigue capturando buena parte de la variabilidad del salario en función de *female*, *max_nivel_educ*, *tiempo_empresa* y *age*.
 
-Los modelos con no linealidades e interacciones presentan mejoras en algunos casos, como el Modelo 8, que incorpora la interacción *female:max_nivel_educ* y logra un RMSE similar al Modelo 1 (13,644.11). El Modelo 2 presenta el desempeño más bajo en términos predictivos (RMSE = 16,113.97). Esto es esperado, ya que este modelo solo estima los residuos de *female*, sin utilizar directamente la variable dependiente *log(salario_hora)*.
+Los modelos con no linealidades e interacciones presentan mejoras en algunos casos, como el Modelo 8, que incorpora la interacción *female:max_nivel_educ* y logra un RMSE similar al Modelo 1 (11,121.560). El Modelo 2 presenta el desempeño más bajo en términos predictivos (RMSE = 13,941.480). Esto es esperado, ya que este modelo solo estima los residuos de *female*, sin utilizar directamente la variable dependiente *log(salario_hora)*.
 
 En términos generales, los modelos que incluyen mayores niveles de complejidad tienden a mejorar el desempeño predictivo, pero no todos los ajustes mejoran la precisión. La inclusión de interacciones y términos no lineales es útil solo si se justifica teóricamente.
 
@@ -967,7 +967,7 @@ abline(h = percentiles, col = "black", lty = 2)
 ggsave("boxploterrorespredict8.png", dpi = 300)
 ```
 
-El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 44444, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
+El boxplot confirma la presencia de valores atípicos con errores de predicción elevados. Las líneas rojas en el gráfico representan los percentiles 2.5% y 97.5%, y cualquier punto fuera de este rango es considerado un outlier. Al analizar las características de los outliers, encontramos casos llamativos, como un individuo con un salario de 75000, que es significativamente mayor que el promedio. Otros outliers presentan salarios bajos que tampoco fueron bien predichos por el modelo. Estas diferencias pueden deberse a errores en la recolección de datos, condiciones laborales particulares o factores relevantes que no fueron incluidos en la regresión.
 
 Desde el punto de vista de la DIAN, estos valores atípicos pueden indicar posibles irregularidades. Los individuos con ingresos extremadamente altos podrían estar no declarando información, lo que podría justificar una revisión adicional. Otra posibilidad es que el modelo no haya capturado algunas características clave del mercado laboral, lo que explicaría por qué ciertas observaciones presentan errores tan grandes.
 
@@ -1071,8 +1071,8 @@ A continuación, se puede visualizar una tabla comparativa de RMSE con las difer
 comparacion_rmse <- data.frame(
   Modelo = c("M1", "M7"),
   RMSE_VSA = c(
-    sqrt(mean((exp(pred_1_log) - test_sample$salario_hora)^2)), 
-    sqrt(mean((exp(pred_7_log) - test_sample$salario_hora)^2))
+    sqrt(mean((exp(pred_1) - test_sample$salario_hora)^2)), 
+    sqrt(mean((exp(pred_7) - test_sample$salario_hora)^2))
   ),
   RMSE_LOOCV = c(rmse_m1_loocv_real, rmse_m7_loocv_real),
   RMSE_Leverage = c(rmse_m1_loocv_laverage_real, rmse_m7_loocv_laverage_real)
@@ -1090,7 +1090,7 @@ writeLines(t_rmse7,
 
 ### Comparación del error predictivo entre Validation Set Approach y LOOCV
 
-Se compararon los errores predictivos de los modelos M1 y M7 utilizando dos métodos de validación: el Validation Set Approach (VSA) y el Leave-One-Out Cross-Validation (LOOCV). Los resultados muestran que el RMSE obtenido con LOOCV es menor que el obtenido con el VSA para ambos modelos, lo que sugiere que la evaluación con LOOCV es más estable y menos dependiente de cómo se divida la muestra. En particular, el RMSE de M7 sigue siendo menor que el de M1 en ambos métodos, lo que refuerza la conclusión de que M7 tiene mejor desempeño predictivo.
+Se compararon los errores predictivos de los modelos M1 y M7 utilizando dos métodos de validación: el Validation Set Approach (VSA) y el Leave-One-Out Cross-Validation (LOOCV). Los resultados muestran que el RMSE obtenido con LOOCV sigue siendo mayor que el obtenido con VSA para ambos modelos. Esto indica que la evaluación con LOOCV puede estar capturando mayor variabilidad en la predicción, en comparación con el VSA, que depende de una única partición de los datos. En ambos métodos, M7 mantiene un RMSE menor que M1, lo que refuerza la conclusión de que M7 tiene un mejor desempeño predictivo en términos de error cuadrático medio.
 
 ### Relación con la estadística de influencia (Leverage)
 

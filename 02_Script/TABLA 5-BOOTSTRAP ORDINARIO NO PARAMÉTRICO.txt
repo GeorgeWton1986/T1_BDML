@@ -1,0 +1,9 @@
+
+TABLA 5-BOOTSTRAP ORDINARIO NO PARAMÉTRICO
+=============================
+      Estadístico      Valor 
+-----------------------------
+1 Estimación Original -0.107 
+2        Sesgo        -0.0002
+3   Error Estándar     0.011 
+-----------------------------
